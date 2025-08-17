@@ -1,0 +1,64 @@
+{
+  "ui": {
+    "settings": "Settings",
+    "close": "Close",
+    "clear": "Clear chat",
+    "placeholder": "What can I do for you?",
+    "mic": "Voice input",
+    "stop": "Stop recording",
+    "upload": "Upload",
+    "send": "Send",
+    "hint": "Tip: Describe what to build — workflows are created directly.",
+    "chip": { "explain": "Explain canvas", "errors": "Analyze errors" }
+  },
+  "status": {
+    "thinking": "Thinking",
+    "opening": "Opening new workflow…",
+    "created": "Workflow created",
+    "recording": "Recording",
+    "transcribing": "Transcribing"
+  },
+  "errors": {
+    "missingApiKey": "LLM API key is missing. Please set it in settings.",
+    "invalidAiJson": "AI response was invalid. Please try again.",
+    "apiError": "Error: {details}",
+    "processing": "Processing error: {details}",
+    "transcribe": "Transcription error: {details}",
+    "importFailed": "UI import failed. Please paste JSON manually (Ctrl/Cmd+V)."
+  },
+  "workflow": {
+    "creatingOnCanvas": "Creating workflow on the canvas…",
+    "noCanvas": "No canvas found. Creating a new workflow and inserting…",
+    "injectingPrev": "Inserting the previously requested workflow…",
+    "injected": "Workflow inserted."
+  },
+  "overlay": {
+    "title": "Settings",
+    "labels": {
+      "lang": "Language",
+      "model": "OpenAI model",
+      "temperature": "Temperature",
+      "apiKey": "API key"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "save": "Save"
+    }
+  },
+  "prompts": {
+    "explain": "Explain the current n8n canvas and summarize the node logic concisely.",
+    "errors": "Analyze the visible error messages on the page, state the cause and concrete steps to fix them."
+  },
+  "popup": {
+    "title": "n8n AI Assistant",
+    "desc": "Displays a bottom‑right chat module to build workflows and answer questions. Enabled on this site:",
+    "enable": "Enable",
+    "disable": "Disable",
+    "statusOn": "<span class=\"ok\">Enabled.</span> The assistant appears bottom right.",
+    "statusOff": "<span class=\"warn\">Disabled.</span> Click “Enable” to show it.",
+    "note": "Note: The assistant currently requires an OpenAI API key (set inside the chat settings)."
+  },
+  "privacy": {
+    "label": "Privacy Policy"
+  }
+}

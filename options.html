@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>n8n AI Assistant – Optionen</title>
+    <style>
+      body { font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #111827; margin: 24px; }
+      h1 { font-size: 20px; margin: 0 0 12px; }
+      .section { border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+      label { display: block; font-weight: 600; margin-top: 10px; }
+      input[type="text"], input[type="password"], input[type="url"] { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px; font: inherit; }
+      small { color: #6b7280; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .actions { display: flex; gap: 12px; margin-top: 12px; }
+      button { background: #111827; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+      button.secondary { background: #e5e7eb; color: #111827; }
+    </style>
+  </head>
+  <body>
+    <h1>n8n AI Assistant – Optionen</h1>
+    <div class="section">
+      <h2>LLM Einstellungen</h2>
+      <label>Provider</label>
+      <input id="provider" type="text" value="openai" />
+      <small>Zurzeit wird ein OpenAI-kompatibles Endpoint (chat/completions) erwartet.</small>
+
+      <div class="row">
+        <div>
+          <label>API Base URL</label>
+          <input id="apiBase" type="url" placeholder="https://api.openai.com/v1" />
+        </div>
+        <div>
+          <label>Model</label>
+          <input id="model" type="text" placeholder="gpt-5" />
+        </div>
+      </div>
+
+      <label>API Key</label>
+      <input id="apiKey" type="password" placeholder="sk-..." />
+
+      <label>Temperatur</label>
+      <input id="temperature" type="text" placeholder="0.2" />
+    </div>
+
+    <div class="section">
+      <h2>Erstellungsmethode</h2>
+      <label>Modus</label>
+      <input id="createMethod" type="text" placeholder="ui" value="ui" />
+      <small>"ui" = direkt auf dem Canvas via UI-Injektion (standard).</small>
+    </div>
+
+    <div class="section">
+      <h2>Seiten, auf denen injiziert wird</h2>
+      <label>Host-/URL-Muster (je Zeile eines). Wildcards * erlaubt.</label>
+      <textarea id="allowedSites" rows="4" style="width:100%; padding:8px; border:1px solid #d1d5db; border-radius:8px; font:inherit">https://n8n.ai4teams.de
+https://n8n.*
+n8n*
+localhost
+127.0.0.1</textarea>
+      <small>Beispiele: *.n8n.cloud, automation.example.com, https://internal.example.com/workflow</small>
+    </div>
+
+    <div class="actions">
+      <button id="save">Speichern</button>
+      <button id="reset" class="secondary">Zurücksetzen</button>
+    </div>
+
+    <script src="options.js"></script>
+  </body>
+  </html>

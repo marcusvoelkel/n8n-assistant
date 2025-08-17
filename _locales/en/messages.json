@@ -1,0 +1,6 @@
+{
+  "extName": { "message": "n8n AI Assistant" },
+  "extDesc": { "message": "Injects a chat module into n8n to answer questions and create workflows directly on the canvas." },
+  "actionTitle": { "message": "n8n AI Assistant" }
+}
+

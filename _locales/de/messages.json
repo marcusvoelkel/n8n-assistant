@@ -1,0 +1,6 @@
+{
+  "extName": { "message": "n8n AI Assistant" },
+  "extDesc": { "message": "Blendet ein Chat‑Modul in n8n ein, beantwortet Fragen und erstellt Workflows direkt auf dem Canvas." },
+  "actionTitle": { "message": "n8n AI Assistant" }
+}
+

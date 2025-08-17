@@ -1,0 +1,64 @@
+{
+  "ui": {
+    "settings": "Einstellungen",
+    "close": "Schließen",
+    "clear": "Chat löschen",
+    "placeholder": "Was kann ich für dich tun?",
+    "mic": "Spracheingabe",
+    "stop": "Aufnahme stoppen",
+    "upload": "Upload",
+    "send": "Senden",
+    "hint": "Tipp: Beschreibe, was gebaut werden soll – Workflows werden direkt erstellt.",
+    "chip": { "explain": "Erkläre Canvas", "errors": "Fehler analysieren" }
+  },
+  "status": {
+    "thinking": "Denkt",
+    "opening": "Öffne neuen Workflow…",
+    "created": "Workflow wurde erstellt",
+    "recording": "Aufnahme läuft",
+    "transcribing": "Transkribiere"
+  },
+  "errors": {
+    "missingApiKey": "LLM API Key fehlt. Bitte in den Einstellungen hinterlegen.",
+    "invalidAiJson": "KI-Antwort war ungültig. Bitte neu versuchen.",
+    "apiError": "Fehler: {details}",
+    "processing": "Fehler bei der Verarbeitung: {details}",
+    "transcribe": "Transkriptionsfehler: {details}",
+    "importFailed": "Import über UI ist fehlgeschlagen. Bitte JSON manuell einfügen (Strg/Cmd+V)."
+  },
+  "workflow": {
+    "creatingOnCanvas": "Erstelle Workflow auf dem Canvas…",
+    "noCanvas": "Kein Canvas gefunden. Erzeuge neuen Workflow und füge ihn ein…",
+    "injectingPrev": "Füge den zuvor angeforderten Workflow ein…",
+    "injected": "Workflow eingefügt."
+  },
+  "overlay": {
+    "title": "Einstellungen",
+    "labels": {
+      "lang": "Sprache",
+      "model": "OpenAI Modell",
+      "temperature": "Temperatur",
+      "apiKey": "API Key"
+    },
+    "actions": {
+      "cancel": "Abbrechen",
+      "save": "Speichern"
+    }
+  },
+  "prompts": {
+    "explain": "Erkläre den aktuellen n8n-Canvas und fasse die Logik der Knoten prägnant zusammen.",
+    "errors": "Analysiere die auf der Seite sichtbaren Fehlermeldungen, nenne die Ursache und konkrete Schritte zur Behebung."
+  },
+  "popup": {
+    "title": "n8n AI Assistant",
+    "desc": "Blendet unten rechts ein Chat‑Modul ein, mit dem Workflows erstellt und Fragen beantwortet werden. Aktiviert auf dieser Seite:",
+    "enable": "Aktivieren",
+    "disable": "Deaktivieren",
+    "statusOn": "<span class=\"ok\">Aktiviert.</span> Der Assistant wird unten rechts eingeblendet.",
+    "statusOff": "<span class=\"warn\">Deaktiviert.</span> Klicke „Aktivieren“, um ihn einzublenden.",
+    "note": "Hinweis: Aktuell funktioniert der Assistant nur mit einem OpenAI API‑Key (in den Einstellungen im Chat hinterlegbar)."
+  },
+  "privacy": {
+    "label": "Datenschutzerklärung"
+  }
+}

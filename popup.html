@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>n8n AI – Popup</title>
+    <style>
+      :root { color-scheme: dark; }
+      body { margin: 0; padding: 14px; width: 320px; background: #1f1f1f; color: #e5e7eb; font: 13px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+      .title { font: 700 14px system-ui; margin-bottom: 6px; }
+      .desc { color: #cbd5e1; margin-bottom: 10px; }
+      .note { color: #9ca3af; font-size: 12px; margin-top: 8px; }
+      .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+      .host { color: #cbd5e1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
+      .btn { border: none; border-radius: 8px; padding: 8px 12px; cursor: pointer; font: 700 12px system-ui; }
+      .btn-primary { background: #ED7863; color: #fff; }
+      .btn-secondary { background: #2a2a2a; color: #e5e7eb; border: 1px solid #3a3a3a; }
+      .status { margin-top: 8px; color: #9ca3af; }
+      .ok { color: #86efac; }
+      .warn { color: #fbbf24; }
+    </style>
+  </head>
+  <body>
+    <div class="title">n8n AI Assistant</div>
+    <div class="desc">Blendet unten rechts ein Chat‑Modul ein, mit dem Workflows erstellt und Fragen beantwortet werden. Aktiviert auf dieser Seite:</div>
+    <div class="row">
+      <div class="host" id="host">–</div>
+      <button class="btn btn-primary" id="toggle">Aktivieren</button>
+    </div>
+    <div class="status" id="status">Der Assistant erscheint unten rechts, wenn aktiviert.</div>
+    <div class="note">Hinweis: Aktuell funktioniert der Assistant nur mit einem OpenAI API‑Key (in den Einstellungen im Chat hinterlegbar).</div>
+    <script src="popup.js"></script>
+  </body>
+  </html>
+
