@@ -58,7 +58,7 @@
     await loadTranslations(lang);
     titleEl.textContent = t('popup.title');
     descEl.textContent = t('popup.desc');
-    const PRIV_URL = 'https://n8n.ai4teams.de/PRIVACY.md';
+    const PRIV_URL = chrome.runtime.getURL('PRIVACY.md');
     noteEl.innerHTML = `${t('popup.note')} <a href="${PRIV_URL}" target="_blank" rel="noopener noreferrer">${t('privacy.label')}</a>`;
     const host = getHostFromUrl(tab?.url || '');
     render(host, false);

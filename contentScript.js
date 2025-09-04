@@ -1051,7 +1051,7 @@
       sh.getElementById(`${NS}-lbl-key`).textContent = t('overlay.labels.apiKey');
       sh.getElementById(`${NS}-cfg-cancel`).textContent = t('overlay.actions.cancel');
       sh.getElementById(`${NS}-cfg-save`).textContent = t('overlay.actions.save');
-      const PRIV_URL = 'https://n8n.ai4teams.de/PRIVACY.html';
+      const PRIV_URL = chrome.runtime.getURL('PRIVACY.md');
       const pv = sh.getElementById(`${NS}-pv-link`);
       pv.textContent = t('privacy.label');
       pv.href = PRIV_URL;

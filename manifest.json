@@ -18,9 +18,17 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "assets/i18n/*.json"
+        "assets/i18n/*.json",
+        "PRIVACY.md"
       ],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "https://*.n8n.cloud/*",
+        "https://n8n.ai4teams.de/*",
+        "http://localhost/*",
+        "https://localhost/*",
+        "http://127.0.0.1/*",
+        "https://127.0.0.1/*"
+      ]
     }
   ],
   "content_scripts": [

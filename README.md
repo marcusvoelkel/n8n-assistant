@@ -3,7 +3,7 @@ Not affiliated with n8n
 
 **Privacy Policy:** https://n8n.ai4teams.de/PRIVACY.html
 
-08/17/2025: Currently works only with OpenAI models. You need to enter your own OpenAI API key in the settings.
+09/04/2025: Currently works only with OpenAI models. You need to enter your own OpenAI API key in the settings.
 
 Adds a floating AI chat to n8n pages. The assistant can answer questions and generate n8n workflows by injecting them directly into the n8n canvas.
 
@@ -32,7 +32,7 @@ Not affiliated with n8n
 
 **Datenschutzerklärung:** https://n8n.ai4teams.de/PRIVACY.html
 
-17.08.2025: Funktioniert derzeit nur mit OpenAI-Modellen. Du musst deinen eigenen OpenAI-API-Schlüssel in den Einstellungen hinterlegen.
+04.09.2025: Funktioniert derzeit nur mit OpenAI-Modellen. Du musst deinen eigenen OpenAI-API-Schlüssel in den Einstellungen hinterlegen.
 
 Fügt einen schwebenden KI-Chat in n8n-Seiten ein. Der Assistent kann Fragen beantworten und n8n-Workflows generieren, indem er sie direkt in das n8n-Canvas einfügt.
 
