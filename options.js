@@ -1,11 +1,10 @@
 const DEFAULTS = {
   provider: 'openai',
   apiBase: 'https://api.openai.com/v1',
-  model: 'gpt-5',
+  model: 'gpt-4o',
   temperature: '0.2',
   createMethod: 'ui',
   allowedSites: [
-    'https://n8n.ai4teams.de',
     'https://n8n.*',
     'n8n*',
     'localhost',

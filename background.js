@@ -1,4 +1,4 @@
-// MV3 service worker: routet Chat an LLM, UI-Injektion übernimmt das Content Script
+// service worker: routes chat to LLM, UI injection 
 
 const DEFAULTS = { provider: 'openai', model: 'gpt-4o-mini', temperature: 0.2 };
 
@@ -9,6 +9,33 @@ const MODEL_MAP = {
   'gpt-4.1-mini': { apiBase: 'https://api.openai.com/v1', apiType: 'chat' },
   'gpt-4.1-nano': { apiBase: 'https://api.openai.com/v1', apiType: 'chat' },
 };
+
+// i18n utilities (mirror contentScript approach)
+let I18N_DICT = {};
+function t(key, params) {
+  const parts = key.split('.');
+  let cur = I18N_DICT;
+  for (const p of parts) { if (cur && typeof cur === 'object') cur = cur[p]; else return key; }
+  let s = typeof cur === 'string' ? cur : key;
+  if (params) { for (const k in params) s = s.replace(new RegExp(`\\{${k}\\}`,'g'), String(params[k])); }
+  return s;
+}
+async function loadTranslations(lang) {
+  const url = chrome.runtime.getURL(`assets/i18n/${lang}.json`);
+  try {
+    const res = await fetch(url);
+    I18N_DICT = await res.json();
+  } catch {
+    const res = await fetch(chrome.runtime.getURL('assets/i18n/de.json'));
+    I18N_DICT = await res.json();
+  }
+}
+async function getLang() {
+  try {
+    const { uiLang } = await chrome.storage.sync.get(['uiLang']);
+    return (uiLang === 'en' ? 'en' : 'de');
+  } catch { return 'de'; }
+}
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type === 'AI_CHAT') {
@@ -41,15 +68,17 @@ function systemPrompt() {
     'Antwortsprache: exakt die Sprache der Nutzereingabe. ' +
     'Schema: {"intent":"create_workflow|qa|help|unknown","answer":"string optional","workflow":{...},"notes":"optional"}. ' +
     'Beim Intent "create_workflow": ' +
-      '- Erzeuge gültiges n8n Workflow-JSON (name, nodes[], connections{}, settings, pinData). ' +
+      '- Erzeuge gültiges n8n Workflow-JSON (triggers, name, nodes[], connections{}, settings, pinData). ' +
       '- Verweise auf vorhandene Credential-Namen nur textuell (davon ausgehen, dass sie existieren). ' +
       '- Berücksichtige Zeitzonen (z.B. Europe/Berlin), Wiederholungen und sinnvolle Defaults. ' +
-      '- Workflow soll direkt auf dem Canvas nutzbar sein. ' +
+      '- Workflow muss direkt auf dem Canvas nutzbar sein. ' +
     'Kontext (Fehler, Node-Liste, URL) kann bereitgestellt werden – berücksichtige ihn bei QA/Help.'
   );
 }
 
 async function handleChat(payload) {
+  // load translations for any fallback strings
+  await loadTranslations(await getLang());
   const settings = await getSettings();
   if (!settings.apiKey) {
     return { errorCode: 'missingApiKey' };
@@ -59,7 +88,7 @@ async function handleChat(payload) {
   const messages = [];
   messages.push({ role: 'system', content: systemPrompt() });
 
-  // Vorherige Chat-Historie (optional)
+  // Chat history
   if (Array.isArray(history)) {
     for (const h of history) {
       const role = h.role === 'bot' ? 'assistant' : (h.role === 'user' ? 'user' : 'assistant');
@@ -105,10 +134,10 @@ async function handleChat(payload) {
   }
 
   if (parsed.intent === 'qa' || parsed.intent === 'help') {
-    return { intent: parsed.intent, answer: parsed.answer || 'Hier ist meine Einschätzung.' };
+    return { intent: parsed.intent, answer: parsed.answer || t('ai.assessment') };
   }
 
-  return { intent: 'unknown', answer: parsed.answer || 'Ich bin unsicher, was du tun möchtest.' };
+  return { intent: 'unknown', answer: parsed.answer || t('ai.unknown') };
 }
 
 function safeExtractJson(text) {
@@ -146,11 +175,11 @@ async function callOpenAI({ apiType, apiBase, apiKey, model, temperature, messag
     });
     if (!res.ok) {
       const txt = await res.text().catch(() => '');
-      throw new Error(`OpenAI Responses Fehler: ${res.status} ${txt}`);
+      throw new Error(t('errors.openaiResponses', { status: res.status, details: txt || '' }));
     }
     const data = await res.json();
     const content = data?.output_text || data?.response?.output_text || '';
-    if (!content) throw new Error('Leere KI-Antwort');
+    if (!content) throw new Error(t('errors.emptyAi'));
     return content;
   }
   // default: chat completions
@@ -161,11 +190,11 @@ async function callOpenAI({ apiType, apiBase, apiKey, model, temperature, messag
   });
   if (!res.ok) {
     const txt = await res.text().catch(() => '');
-    throw new Error(`OpenAI Chat Fehler: ${res.status} ${txt}`);
+    throw new Error(t('errors.openaiChat', { status: res.status, details: txt || '' }));
   }
   const data = await res.json();
   const content = data?.choices?.[0]?.message?.content;
-  if (!content) throw new Error('Leere KI-Antwort');
+  if (!content) throw new Error(t('errors.emptyAi'));
   return content;
 }
 
@@ -209,18 +238,18 @@ function toResponsesInput(messages) {
 }
 
 async function handleTranscribe(payload) {
+  await loadTranslations(await getLang());
   const settings = await getSettings();
-  if (!settings.apiKey) return { error: 'LLM API Key fehlt. Bitte in den Einstellungen hinterlegen.' };
+  if (!settings.apiKey) return { error: t('errors.missingApiKey') };
   const dataUrl = payload?.dataUrl;
-  if (!dataUrl) return { error: 'Keine Audiodaten übermittelt.' };
+  if (!dataUrl) return { error: t('errors.noAudio') };
   const blob = await (await fetch(dataUrl)).blob();
   const file = new File([blob], 'audio.webm', { type: blob.type || 'audio/webm' });
   const form = new FormData();
   form.append('file', file);
   form.append('model', 'whisper-1');
-  // Sprache: Auto-Detection (keine feste Sprache, erkennt z.B. de und en)
-  // Wenn du eine bevorzugte Sprache erzwingen willst, können wir das optional setzen.
-  const url = (MODEL_MAP['gpt-5']?.apiBase || 'https://api.openai.com/v1').replace(/\/$/, '') + '/audio/transcriptions';
+  // Sprache: Auto-Detection 
+  const url = (MODEL_MAP['gpt-4']?.apiBase || 'https://api.openai.com/v1').replace(/\/$/, '') + '/audio/transcriptions';
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${settings.apiKey}` },
@@ -228,11 +257,9 @@ async function handleTranscribe(payload) {
   });
   if (!res.ok) {
     const txt = await res.text().catch(() => '');
-    throw new Error(`Transkriptions-API Fehler: ${res.status} ${txt}`);
+    throw new Error(t('errors.transcribeApi', { status: res.status, details: txt || '' }));
   }
   const data = await res.json();
   const text = data?.text || '';
   return { text };
 }
-
-// Keine direkte n8n-API-Nutzung mehr – Content Script injiziert Workflows in die UI.

@@ -1,5 +1,5 @@
 // Content script: injects a floating chat widget into n8n pages
-// MV3 safe: no eval, uses Shadow DOM to isolate styles
+// uses shadow DOM to isolate styles
 
 (function () {
   const NS = 'n8n-ai-assistant';
@@ -12,14 +12,49 @@
     inputFocused: false,
   };
 
-  // Utility: promisified chrome.storage get/set
+  // Utility: promisified chrome.storage get/set (fault-tolerant)
+  function isExtContextValid() {
+    try { return typeof chrome !== 'undefined' && !!(chrome.runtime && chrome.runtime.id); } catch { return false; }
+  }
   const storage = {
-    get: (keys) => new Promise((resolve) => chrome.storage.sync.get(keys, resolve)),
-    set: (obj) => new Promise((resolve) => chrome.storage.sync.set(obj, resolve)),
-    getLocal: (keys) => new Promise((resolve) => chrome.storage.local.get(keys, resolve)),
-    setLocal: (obj) => new Promise((resolve) => chrome.storage.local.set(obj, resolve)),
-    removeLocal: (keys) => new Promise((resolve) => chrome.storage.local.remove(keys, resolve)),
+    get: (keys) => new Promise((resolve) => {
+      if (!isExtContextValid() || !chrome.storage?.sync?.get) return resolve({});
+      try { chrome.storage.sync.get(keys, (res) => resolve(res || {})); } catch { resolve({}); }
+    }),
+    set: (obj) => new Promise((resolve) => {
+      if (!isExtContextValid() || !chrome.storage?.sync?.set) return resolve();
+      try { chrome.storage.sync.set(obj, () => resolve()); } catch { resolve(); }
+    }),
+    getLocal: (keys) => new Promise((resolve) => {
+      if (!isExtContextValid() || !chrome.storage?.local?.get) return resolve({});
+      try { chrome.storage.local.get(keys, (res) => resolve(res || {})); } catch { resolve({}); }
+    }),
+    setLocal: (obj) => new Promise((resolve) => {
+      if (!isExtContextValid() || !chrome.storage?.local?.set) return resolve();
+      try { chrome.storage.local.set(obj, () => resolve()); } catch { resolve(); }
+    }),
+    removeLocal: (keys) => new Promise((resolve) => {
+      if (!isExtContextValid() || !chrome.storage?.local?.remove) return resolve();
+      try { chrome.storage.local.remove(keys, () => resolve()); } catch { resolve(); }
+    }),
   };
+
+  // Global-safe input focus helper (works across scopes)
+  function focusAssistantInputSoon() {
+    try {
+      const sh = document.getElementById(`${NS}-root`)?.shadowRoot;
+      const input = sh?.getElementById(`${NS}-input`);
+      if (!input) return;
+      try { input.focus(); } catch {}
+      setTimeout(() => { try { input.focus(); } catch {} }, 0);
+      try {
+        input.style.height = 'auto';
+        const max = 140;
+        const h = Math.min(max, input.scrollHeight);
+        input.style.height = h + 'px';
+      } catch {}
+    } catch {}
+  }
 
   function matchesAllowedSite(url, patterns) {
     if (!patterns || patterns.length === 0) {
@@ -28,7 +63,7 @@
     }
     try {
       return patterns.some((p) => {
-        // Support simple wildcard: *.example.com or substring contains when no wildcard
+        // *.example.com or substring contains when no wildcard
         if (p.includes('*')) {
           // convert to regex
           const escaped = p.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
@@ -62,8 +97,8 @@
     style.textContent = `
       :host { all: initial; }
       .fab { position: fixed; right: 20px; bottom: 20px; width: 48px; height: 48px; border-radius: 50%;
-        background: #ED7863; color: #fefefe; display: flex; align-items: center; justify-content: center;
-        font: 600 16px/1 sans-serif; cursor: pointer; box-shadow: none; border: none; outline: none; z-index: 2147483647; opacity: 0.85; }
+        background: #ED7863; color: #ffffff !important; display: flex; align-items: center; justify-content: center;
+        font: 600 28px/1 sans-serif; cursor: pointer; box-shadow: none; border: none; outline: none; z-index: 2147483647; opacity: 0.85; filter: brightness(1.1) contrast(1.2); }
       .fab:hover { filter: brightness(0.95); }
       .panel { position: fixed; right: 20px; bottom: 80px; width: 410px; max-height: 70vh; display: none;
         background: #2b2b2b; color: #e5e7eb; border-radius: 12px; overflow: hidden; box-shadow: 0 16px 48px rgba(0,0,0,0.32);
@@ -76,12 +111,31 @@
       .btn.icon { width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; }
       .btn.icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
       .btn:hover { background: #2a2a2a; }
-      .close { background: transparent; border: none; color: #9ca3af; cursor: pointer; font: 600 16px/1; }
+      .close { background: transparent; border: none; color: #9ca3af; cursor: pointer; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+      .close:hover { color: #e5e7eb; }
+      .close svg { width: 16px; height: 16px; }
       .quick { display: flex; gap: 6px; padding: 6px 10px; border-bottom: 1px solid #3a3a3a; background: #232323; flex-wrap: wrap; }
       .chip { background: #1f1f1f; border: 1px solid #3a3a3a; color: #cbd5e1; border-radius: 999px; padding: 4px 8px; cursor: pointer; font: 600 10px/1 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
       .chip:hover { background: #2a2a2a; }
-      .messages { flex: 1 1 auto; overflow: auto; padding: 10px 10px 0; display: flex; flex-direction: column; gap: 8px; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 12px; }
-      .msg { border-radius: 10px; padding: 8px 10px; white-space: pre-wrap; word-break: break-word; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; line-height: 1.5; }
+      .messages { flex: 1 1 auto; overflow: auto; padding: 10px 10px 0; display: flex; flex-direction: column; gap: 8px; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 13px; line-height: 1.6; }
+      .msg { border-radius: 10px; padding: 10px 12px; white-space: pre-wrap; word-break: break-word; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; line-height: 1.6; }
+      /* HTML formatting styles for bot messages */
+      .msg.bot h1 { font-size: 1.5em; font-weight: 600; margin: 0.5em 0; color: #e5e7eb; }
+      .msg.bot h2 { font-size: 1.3em; font-weight: 600; margin: 0.5em 0; color: #e5e7eb; }
+      .msg.bot h3 { font-size: 1.15em; font-weight: 600; margin: 0.4em 0; color: #e5e7eb; }
+      .msg.bot h4 { font-size: 1.05em; font-weight: 600; margin: 0.3em 0; color: #e5e7eb; }
+      .msg.bot p { margin: 0.5em 0; }
+      .msg.bot ul, .msg.bot ol { margin: 0.5em 0; padding-left: 1.5em; }
+      .msg.bot li { margin: 0.25em 0; }
+      .msg.bot code { background: #1a1a1a; padding: 2px 4px; border-radius: 3px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 0.9em; color: #94a3b8; }
+      .msg.bot pre { background: #1a1a1a; padding: 10px; border-radius: 6px; overflow-x: auto; margin: 0.5em 0; }
+      .msg.bot pre code { background: transparent; padding: 0; font-size: 0.85em; }
+      .msg.bot strong { font-weight: 600; color: #f1f5f9; }
+      .msg.bot em { font-style: italic; color: #cbd5e1; }
+      .msg.bot a { color: #60a5fa; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
+      .msg.bot a:hover { border-bottom-color: #60a5fa; }
+      .msg.bot hr { border: none; border-top: 1px solid #3a3a3a; margin: 1em 0; }
+      .msg.bot blockquote { border-left: 3px solid #3a3a3a; padding-left: 1em; margin: 0.5em 0; color: #9ca3af; }
       .user { background: #2f2f2f; align-self: flex-end; }
       .bot { background: #242424; align-self: flex-start; }
       .footer { padding: 10px; border-top: 1px solid #3a3a3a; display: flex; gap: 8px; align-items: center; }
@@ -92,6 +146,23 @@
       .micBtn.stop { width: 24px; height: 24px; }
       .micBtn.stop svg { width: 18px; height: 18px; }
       .hidden { display: none !important; }
+      /* Spinner animation for thinking state */
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .msg.thinking { opacity: 0.8; }
+      .msg.thinking .spinner {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid #4a4a4a;
+        border-top-color: #9ca3af;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
       /* removed right-side transcribe indicator in favor of placeholder text */
       .send { background: #fefefe; color: #333333; border: 1px solid #d1d5db; font: 600 12px/1 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; border-radius: 8px; padding: 8px 10px; cursor: pointer; }
       .send:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -104,7 +175,7 @@
     const fab = document.createElement('button');
     fab.className = 'fab';
     fab.title = 'n8n AI Assistant';
-    fab.textContent = 'AI';
+    fab.textContent = '✨';
 
     const panel = document.createElement('div');
     panel.className = 'panel';
@@ -124,7 +195,11 @@
             <path d="M10 10v8M14 10v8" />
           </svg>
         </button>
-        <button type="button" class="close" id="${NS}-close" title="">×</button>
+        <button type="button" class="close" id="${NS}-close" title="" aria-label="Minimieren">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
       </div>
     `;
 
@@ -273,7 +348,7 @@
       const file = e.target.files && e.target.files[0];
       if (!file) return;
       const b64 = await fileToDataUrl(file);
-      appendMessage('user', '(Bild angehängt)');
+      appendMessage('user', `(${t('status.imageAttached')})`);
       state.pendingImage = b64;
     });
 
@@ -325,7 +400,7 @@
           const file = it.getAsFile();
           if (file) {
             const b64 = await fileToDataUrl(file);
-            appendMessage('user', '(Bild eingefügt)');
+            appendMessage('user', `(${t('status.imageInserted')})`);
             state.pendingImage = b64;
             e.preventDefault();
           }
@@ -335,7 +410,7 @@
 
     async function startRecording() {
       try {
-        if (!navigator.mediaDevices?.getUserMedia) throw new Error('Kein Mikrofonzugriff verfügbar');
+        if (!navigator.mediaDevices?.getUserMedia) throw new Error(t('errors.micUnavailable'));
         media.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         media.chunks = [];
         media.rec = new MediaRecorder(media.stream);
@@ -346,7 +421,7 @@
         input.setAttribute('data-prev-ph', input.placeholder || '');
         startPlaceholderAnim(t('status.recording'));
       } catch (e) {
-        appendMessage('bot', `Mikrofonfehler: ${String(e.message || e)}`);
+        appendMessage('bot', t('errors.microphoneError', { details: String(e.message || e) }));
       }
     }
 
@@ -425,7 +500,7 @@
       stopThinkingAnim();
       let dots = 0;
       const tick = () => {
-        updateMessage(el, (base || 'Denkt') + (dots === 0 ? '' : '.'.repeat(dots)), { thinking: true });
+        updateMessage(el, (base || t('status.thinking')) + (dots === 0 ? '' : '.'.repeat(dots)), { thinking: true });
         dots = (dots + 1) % 4; // 0..3 Punkte
       };
       tick();
@@ -450,7 +525,7 @@
       sendBtn.disabled = true;
       input.value = '';
 
-      appendMessage('user', text || '(nur Bild)');
+      appendMessage('user', text || `(${t('status.onlyImage')})`);
       const thinkingEl = await appendMessage('bot', t('status.thinking'), { thinking: true });
       startThinkingAnim(thinkingEl, t('status.thinking'));
       persistMessages();
@@ -522,7 +597,7 @@
       if (e.currentTarget && e.currentTarget.blur) e.currentTarget.blur();
       focusInputSoon();
     });
-    // (Gmail Quick Action entfernt)
+    // (Quick Action entfernt)
 
     shadow.getElementById(`${NS}-clear`).addEventListener('click', async () => {
       state.messages = [];
@@ -531,6 +606,106 @@
       focusInputSoon();
     });
 
+    // Markdown to HTML Konvertierung
+    function markdownToHTML(text) {
+      if (!text) return '';
+      
+      // Escape HTML entities first
+      let html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      
+      // Code blocks (```code```)
+      html = html.replace(/```([^`]*?)```/g, '<pre><code>$1</code></pre>');
+      
+      // Inline code (`code`)
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+      
+      // Bold (**text** or __text__)
+      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+      
+      // Italic (*text* or _text_)
+      html = html.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+      html = html.replace(/_([^_\n]+)_/g, '<em>$1</em>');
+      
+      // Headlines (# H1, ## H2, ### H3, #### H4)
+      html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+      
+      // Process lists
+      let lines = html.split('\n');
+      let processedLines = [];
+      let inUList = false;
+      let inOList = false;
+      
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        
+        // Check for unordered list
+        if (line.match(/^[\*\-] /)) {
+          if (!inUList) {
+            processedLines.push('<ul>');
+            inUList = true;
+          }
+          processedLines.push('<li>' + line.substring(2) + '</li>');
+        }
+        // Check for ordered list
+        else if (line.match(/^[0-9]+\. /)) {
+          if (!inOList) {
+            processedLines.push('<ol>');
+            inOList = true;
+          }
+          processedLines.push('<li>' + line.replace(/^[0-9]+\. /, '') + '</li>');
+        }
+        else {
+          // Close open lists if we're out of them
+          if (inUList) {
+            processedLines.push('</ul>');
+            inUList = false;
+          }
+          if (inOList) {
+            processedLines.push('</ol>');
+            inOList = false;
+          }
+          processedLines.push(line);
+        }
+      }
+      
+      // Close any remaining open lists
+      if (inUList) processedLines.push('</ul>');
+      if (inOList) processedLines.push('</ol>');
+      
+      html = processedLines.join('\n');
+      
+      // Links [text](url)
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+      
+      // Horizontal rule (--- or ***)
+      html = html.replace(/^[\*\-]{3,}$/gm, '<hr>');
+      
+      // Line breaks and paragraphs
+      html = html.replace(/  \n/g, '<br>');
+      
+      // Add paragraphs for text blocks
+      let blocks = html.split(/\n\n+/);
+      html = blocks.map(block => {
+        // Don't wrap if already contains block elements
+        if (block.match(/^<(?:h[1-6]|ul|ol|pre|hr|blockquote)/)) {
+          return block;
+        }
+        // Don't wrap empty blocks
+        if (!block.trim()) return '';
+        // Wrap in paragraph
+        return '<p>' + block + '</p>';
+      }).filter(b => b).join('\n');
+      
+      return html;
+    }
+
     async function appendMessage(role, text, opts = {}) {
       const el = document.createElement('div');
       el.className = `msg ${role === 'user' ? 'user' : 'bot'}` + (opts.thinking ? ' thinking' : '');
@@ -538,11 +713,21 @@
         const sp = document.createElement('span');
         sp.className = 'spinner';
         const tx = document.createElement('span');
-        tx.textContent = text || '';
+        // Use innerHTML for bot messages with thinking state too
+        if (role === 'bot') {
+          tx.innerHTML = markdownToHTML(text);
+        } else {
+          tx.textContent = text || '';
+        }
         el.appendChild(sp);
         el.appendChild(tx);
       } else {
-        el.textContent = text || '';
+        // Render as HTML for bot messages, plain text for user messages
+        if (role === 'bot') {
+          el.innerHTML = markdownToHTML(text);
+        } else {
+          el.textContent = text || '';
+        }
       }
       if (opts.imageDataUrl) {
         const img = document.createElement('img');
@@ -561,15 +746,29 @@
       if (!el) return;
       el.classList.toggle('thinking', !!opts.thinking);
       while (el.firstChild) el.removeChild(el.firstChild);
+      
+      // Determine if this is a bot message by checking the element's class
+      const isBot = el.classList.contains('bot');
+      
       if (opts.thinking) {
         const sp = document.createElement('span');
         sp.className = 'spinner';
         const tx = document.createElement('span');
-        tx.textContent = text || '';
+        // Use innerHTML for bot messages
+        if (isBot) {
+          tx.innerHTML = markdownToHTML(text);
+        } else {
+          tx.textContent = text || '';
+        }
         el.appendChild(sp);
         el.appendChild(tx);
       } else {
-        el.textContent = text || '';
+        // Render as HTML for bot messages, plain text for user messages
+        if (isBot) {
+          el.innerHTML = markdownToHTML(text);
+        } else {
+          el.textContent = text || '';
+        }
       }
       try {
         const idx = Array.prototype.indexOf.call(messages.children, el);
@@ -687,10 +886,10 @@
         if (onEditor) {
           const ready = await waitForCanvas(8000, 150);
           if (!ready) { navigateToPendingRoute(pending); return; }
-          await appendMessage('bot', 'Füge den zuvor angeforderten Workflow ein…');
+          await appendMessage('bot', t('workflow.injectingPrev'));
           const ok = await injectWorkflowToCanvas(pending.workflow);
           if (ok) {
-            await appendMessage('bot', 'Workflow eingefügt.');
+            await appendMessage('bot', t('workflow.injected'));
             await storage.removeLocal([key]);
           }
           return;
@@ -861,7 +1060,7 @@
 
     ov.classList.add('open');
 
-    sh.getElementById(`${NS}-cfg-cancel`).onclick = () => { ov.classList.remove('open'); focusInputSoon(); };
+    sh.getElementById(`${NS}-cfg-cancel`).onclick = () => { ov.classList.remove('open'); focusAssistantInputSoon(); };
     langSel.onchange = async () => {
       const newLang = (langSel.value === 'en' ? 'en' : 'de');
       // Reorder options so current language appears first
@@ -887,7 +1086,7 @@
       state.settings = { ...(state.settings || {}), ...payload };
       ov.classList.remove('open');
       updateHintForApiKey();
-      focusInputSoon();
+      focusAssistantInputSoon();
       await loadTranslations(state.settings.uiLang || 'de');
       applyTranslations(state.settings.uiLang || 'de');
     };
@@ -957,7 +1156,7 @@
       const evt = new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true });
       const target = findCanvasTarget() || document.body;
       target.dispatchEvent(evt);
-      // Optimistisch: n8n verarbeitet Paste synchron/async – wir warten kurz
+      // doofer workaround, n8n verarbeitet Paste synchron/async... await
       await sleep(200);
       return true;
     } catch (e) {
@@ -1005,7 +1204,7 @@
   function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
   async function maybeInject() {
-    const cfg = await new Promise((resolve) => chrome.storage.sync.get(['allowedSites'], resolve));
+    const cfg = await storage.get(['allowedSites']);
     const allowed = cfg?.allowedSites || [];
     if (matchesAllowedSite(location.href, allowed)) {
       ensureInjected();
@@ -1013,7 +1212,7 @@
     }
     // manual toggle per host
     const key = getForceKey();
-    const local = await chrome.storage.local.get([key]);
+    const local = await storage.getLocal([key]);
     if (local[key]) ensureInjected();
   }
 

@@ -16,7 +16,10 @@
     "opening": "Öffne neuen Workflow…",
     "created": "Workflow wurde erstellt",
     "recording": "Aufnahme läuft",
-    "transcribing": "Transkribiere"
+    "transcribing": "Transkribiere",
+    "imageInserted": "Bild eingefügt",
+    "imageAttached": "Bild angehängt",
+    "onlyImage": "nur Bild"
   },
   "errors": {
     "missingApiKey": "LLM API Key fehlt. Bitte in den Einstellungen hinterlegen.",
@@ -24,7 +27,18 @@
     "apiError": "Fehler: {details}",
     "processing": "Fehler bei der Verarbeitung: {details}",
     "transcribe": "Transkriptionsfehler: {details}",
-    "importFailed": "Import über UI ist fehlgeschlagen. Bitte JSON manuell einfügen (Strg/Cmd+V)."
+    "importFailed": "Import über UI ist fehlgeschlagen. Bitte JSON manuell einfügen (Strg/Cmd+V).",
+    "micUnavailable": "Kein Mikrofonzugriff verfügbar",
+    "microphoneError": "Mikrofonfehler: {details}",
+    "noAudio": "Keine Audiodaten übermittelt.",
+    "openaiResponses": "OpenAI Responses Fehler: {status} {details}",
+    "openaiChat": "OpenAI Chat Fehler: {status} {details}",
+    "emptyAi": "Leere KI-Antwort",
+    "transcribeApi": "Transkriptions-API Fehler: {status} {details}"
+  },
+  "ai": {
+    "assessment": "Hier ist meine Einschätzung.",
+    "unknown": "Ich bin unsicher, was du tun möchtest."
   },
   "workflow": {
     "creatingOnCanvas": "Erstelle Workflow auf dem Canvas…",

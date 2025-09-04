@@ -16,7 +16,10 @@
     "opening": "Opening new workflow…",
     "created": "Workflow created",
     "recording": "Recording",
-    "transcribing": "Transcribing"
+    "transcribing": "Transcribing",
+    "imageInserted": "Image inserted",
+    "imageAttached": "Image attached",
+    "onlyImage": "only image"
   },
   "errors": {
     "missingApiKey": "LLM API key is missing. Please set it in settings.",
@@ -24,7 +27,18 @@
     "apiError": "Error: {details}",
     "processing": "Processing error: {details}",
     "transcribe": "Transcription error: {details}",
-    "importFailed": "UI import failed. Please paste JSON manually (Ctrl/Cmd+V)."
+    "importFailed": "UI import failed. Please paste JSON manually (Ctrl/Cmd+V).",
+    "micUnavailable": "Microphone access unavailable",
+    "microphoneError": "Microphone error: {details}",
+    "noAudio": "No audio data provided.",
+    "openaiResponses": "OpenAI Responses error: {status} {details}",
+    "openaiChat": "OpenAI Chat error: {status} {details}",
+    "emptyAi": "Empty AI response",
+    "transcribeApi": "Transcription API error: {status} {details}"
+  },
+  "ai": {
+    "assessment": "Here is my assessment.",
+    "unknown": "I'm not sure what you want to do."
   },
   "workflow": {
     "creatingOnCanvas": "Creating workflow on the canvas…",

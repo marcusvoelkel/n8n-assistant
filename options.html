@@ -1,70 +1,41 @@
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>n8n AI Assistant – Optionen</title>
-    <style>
-      body { font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #111827; margin: 24px; }
-      h1 { font-size: 20px; margin: 0 0 12px; }
-      .section { border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
-      label { display: block; font-weight: 600; margin-top: 10px; }
-      input[type="text"], input[type="password"], input[type="url"] { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px; font: inherit; }
-      small { color: #6b7280; }
-      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-      .actions { display: flex; gap: 12px; margin-top: 12px; }
-      button { background: #111827; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
-      button.secondary { background: #e5e7eb; color: #111827; }
-    </style>
-  </head>
-  <body>
-    <h1>n8n AI Assistant – Optionen</h1>
-    <div class="section">
-      <h2>LLM Einstellungen</h2>
-      <label>Provider</label>
-      <input id="provider" type="text" value="openai" />
-      <small>Zurzeit wird ein OpenAI-kompatibles Endpoint (chat/completions) erwartet.</small>
-
-      <div class="row">
-        <div>
-          <label>API Base URL</label>
-          <input id="apiBase" type="url" placeholder="https://api.openai.com/v1" />
-        </div>
-        <div>
-          <label>Model</label>
-          <input id="model" type="text" placeholder="gpt-5" />
-        </div>
-      </div>
-
-      <label>API Key</label>
-      <input id="apiKey" type="password" placeholder="sk-..." />
-
-      <label>Temperatur</label>
-      <input id="temperature" type="text" placeholder="0.2" />
-    </div>
-
-    <div class="section">
-      <h2>Erstellungsmethode</h2>
-      <label>Modus</label>
-      <input id="createMethod" type="text" placeholder="ui" value="ui" />
-      <small>"ui" = direkt auf dem Canvas via UI-Injektion (standard).</small>
-    </div>
-
-    <div class="section">
-      <h2>Seiten, auf denen injiziert wird</h2>
-      <label>Host-/URL-Muster (je Zeile eines). Wildcards * erlaubt.</label>
-      <textarea id="allowedSites" rows="4" style="width:100%; padding:8px; border:1px solid #d1d5db; border-radius:8px; font:inherit">https://n8n.ai4teams.de
-https://n8n.*
-n8n*
-localhost
-127.0.0.1</textarea>
-      <small>Beispiele: *.n8n.cloud, automation.example.com, https://internal.example.com/workflow</small>
-    </div>
-
-    <div class="actions">
-      <button id="save">Speichern</button>
-      <button id="reset" class="secondary">Zurücksetzen</button>
-    </div>
-
-    <script src="options.js"></script>
-  </body>
-  </html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.4">
+  <style type="text/css">
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px '.SF NS'; color: #0e121d; -webkit-text-stroke: #0e121d}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.7px 'Helvetica Neue'; color: #585e6d; -webkit-text-stroke: #585e6d}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px 'Helvetica Neue'; -webkit-text-stroke: #000000; background-color: #ffffff}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.0px 'Helvetica Neue'; color: #ffffff; -webkit-text-stroke: #ffffff; background-color: #0e121d}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.0px 'Helvetica Neue'; color: #0e121d; -webkit-text-stroke: #0e121d; background-color: #dfe1e6}
+    span.s1 {font-kerning: none}
+    span.s2 {font: 14.0px 'Helvetica Neue'; font-kerning: none; color: #000000; background-color: #ffffff; -webkit-text-stroke: 0px #000000}
+    span.s3 {font: 14.0px 'Helvetica Neue'; font-kerning: none; color: #0e121d; -webkit-text-stroke: 0px #0e121d}
+  </style>
+</head>
+<body>
+<h1 style="margin: 0.0px 0.0px 12.0px 0.0px; font: 20.0px 'Helvetica Neue'; color: #0e121d; -webkit-text-stroke: #0e121d"><span class="s1"><b>n8n AI Assistant – Optionen</b></span></h1>
+<h2 style="margin: 0.0px 0.0px 17.4px 0.0px; font: 21.0px 'Helvetica Neue'; color: #0e121d; -webkit-text-stroke: #0e121d"><span class="s1"><b>LLM Einstellungen</b></span></h2>
+<p class="p3"><span class="s1"><b>Provider</b></span></p>
+<p class="p4"><span class="s2">openai</span><span class="s3"> </span><span class="s1">Zurzeit wird ein OpenAI-kompatibles Endpoint (chat/completions) erwartet.</span></p>
+<p class="p3"><span class="s1"><b>API Base URL</b></span></p>
+<p class="p3"><span class="s1"><b>Model</b></span></p>
+<p class="p3"><span class="s1"><b>API Key</b></span></p>
+<p class="p3"><span class="s1"><b>Temperatur</b></span></p>
+<h2 style="margin: 0.0px 0.0px 17.4px 0.0px; font: 21.0px 'Helvetica Neue'; color: #0e121d; -webkit-text-stroke: #0e121d"><span class="s1"><b>Erstellungsmethode</b></span></h2>
+<p class="p3"><span class="s1"><b>Modus</b></span></p>
+<p class="p4"><span class="s2">ui</span><span class="s3"> </span><span class="s1">"ui" = direkt auf dem Canvas via UI-Injektion (standard).</span></p>
+<h2 style="margin: 0.0px 0.0px 17.4px 0.0px; font: 21.0px 'Helvetica Neue'; color: #0e121d; -webkit-text-stroke: #0e121d"><span class="s1"><b>Seiten, auf denen injiziert wird</b></span></h2>
+<p class="p3"><span class="s1"><b>Host-/URL-Muster (je Zeile eines). Wildcards * erlaubt.</b><b></b></span></p>
+<p class="p5"><span class="s1">https://n8n.*</span></p>
+<p class="p5"><span class="s1">n8n*</span></p>
+<p class="p5"><span class="s1">localhost</span></p>
+<p class="p4"><span class="s2">127.0.0.1</span><span class="s3"> </span><span class="s1">Beispiele: *.n8n.cloud, automation.example.com, https://internal.example.com/workflow</span></p>
+<p class="p6"><span class="s1">Speichern</span></p>
+<p class="p7"><span class="s1">Zurücksetzen</span></p>
+</body>
+</html>
