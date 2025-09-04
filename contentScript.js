@@ -1152,12 +1152,33 @@
   async function tryPasteImport(text) {
     try {
       const dt = new DataTransfer();
+      // Provide multiple common MIME types so n8n can pick up any
       dt.setData('text/plain', text);
-      const evt = new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true });
+      try { dt.setData('text', text); } catch {}
+      try { dt.setData('application/json', text); } catch {}
+
+      // Primary: real ClipboardEvent at canvas
+      let ok = false;
       const target = findCanvasTarget() || document.body;
-      target.dispatchEvent(evt);
-      // doofer workaround, n8n verarbeitet Paste synchron/async... await
-      await sleep(200);
+      try {
+        const evt = new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true });
+        ok = target.dispatchEvent(evt);
+      } catch {}
+
+      // Fallbacks: dispatch at document and window (some apps listen there)
+      if (!ok) {
+        try {
+          const evDoc = new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true });
+          ok = document.dispatchEvent(evDoc) || ok;
+        } catch {}
+        try {
+          const evWin = new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true });
+          ok = window.dispatchEvent(evWin) || ok;
+        } catch {}
+      }
+
+      // Give n8n time to process
+      await sleep(300);
       return true;
     } catch (e) {
       console.warn('tryPasteImport failed', e);
@@ -1171,14 +1192,25 @@
       if (!target) return false;
       const dt = new DataTransfer();
       dt.setData('text/plain', text);
+      try { dt.setData('text', text); } catch {}
+      try { dt.setData('application/json', text); } catch {}
+
       const rect = target.getBoundingClientRect();
       const x = rect.left + rect.width / 2;
       const y = rect.top + rect.height / 2;
-      const evInit = { dataTransfer: dt, clientX: x, clientY: y, bubbles: true, cancelable: true };
-      target.dispatchEvent(new DragEvent('dragenter', evInit));
-      target.dispatchEvent(new DragEvent('dragover', evInit));
-      target.dispatchEvent(new DragEvent('drop', evInit));
-      await sleep(200);
+
+      const createEvt = (type) => {
+        const ev = new DragEvent(type, { clientX: x, clientY: y, bubbles: true, cancelable: true, dataTransfer: dt });
+        // Ensure dataTransfer is present (some browsers ignore init)
+        if (!ev.dataTransfer) {
+          try { Object.defineProperty(ev, 'dataTransfer', { value: dt }); } catch {}
+        }
+        return ev;
+      };
+      target.dispatchEvent(createEvt('dragenter'));
+      target.dispatchEvent(createEvt('dragover'));
+      target.dispatchEvent(createEvt('drop'));
+      await sleep(300);
       return true;
     } catch (e) {
       console.warn('tryDropImport failed', e);
