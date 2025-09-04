@@ -27,7 +27,7 @@ section { scroll-margin-top: 90px; }
 /* Compact input style for single-line fields */
 .input-compact { height: 40px; padding: 0 10px; line-height: 40px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-.hp { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+.hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 
 /* Make all headings in Features section orange */
 #features h2, #features h3 { color: #ED7863; }
@@ -91,6 +91,3 @@ header { border-bottom: 0 !important; }
 .btn-secondary.solid:active { background: #e2e2e5; border-color: rgba(125,125,125,.46); }
 .dark .btn-secondary.solid:hover { background: #313135; border-color: #4a4a50; }
 .dark .btn-secondary.solid:active { background: #3a3a3f; border-color: #52525b; }
-
-/* Ensure long CTA button labels wrap on small screens */
-#cta-inline .btn { display: inline-block; max-width: 100%; white-space: normal; text-align: center; line-height: 1.25; }
