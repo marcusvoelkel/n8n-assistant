@@ -1,9 +1,10 @@
 # n8n AI Assistant (Chrome Extension)
 Not affiliated with n8n
 
-**Privacy Policy:** https://n8n.ai4teams.de/PRIVACY.html
+**Privacy Policy:** https://n8nai.io/privacy.html
 
 09/04/2025: Currently works only with OpenAI models. You need to enter your own OpenAI API key in the settings.
+In the future (v2.0), you will have the option to add API keys from other providers or use a subscription where you don’t need an API key at all. Sign up for the waitlist at https://n8nai.io
 
 Adds a floating AI chat to n8n pages. The assistant can answer questions and generate n8n workflows by injecting them directly into the n8n canvas.
 
@@ -30,9 +31,10 @@ Adds a floating AI chat to n8n pages. The assistant can answer questions and gen
 # n8n KI-Assistent (Chrome-Erweiterung)
 Not affiliated with n8n
 
-**Datenschutzerklärung:** https://n8n.ai4teams.de/PRIVACY.html
+**Datenschutzerklärung:** https://n8nai.io/privacy.html
 
-04.09.2025: Funktioniert derzeit nur mit OpenAI-Modellen. Du musst deinen eigenen OpenAI-API-Schlüssel in den Einstellungen hinterlegen.
+04.09.2025: Funktioniert derzeit nur mit OpenAI-Modellen. Du musst deinen eigenen OpenAI-API-Key in den Einstellungen hinterlegen.
+In Zukunft (v2.0) hast du die Möglichkeit, API-Keys anderer Hersteller zu hinterlegen oder ein Abo zu nutzen, in dem du gar keinen API-Key benötigst. Registriere dich auf der Waitlist https://n8nai.io
 
 Fügt einen schwebenden KI-Chat in n8n-Seiten ein. Der Assistent kann Fragen beantworten und n8n-Workflows generieren, indem er sie direkt in das n8n-Canvas einfügt.
 
