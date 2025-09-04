@@ -94,12 +94,3 @@ header { border-bottom: 0 !important; }
 
 /* Ensure long CTA button labels wrap on small screens */
 #cta-inline .btn { display: inline-block; max-width: 100%; white-space: normal; text-align: center; line-height: 1.25; }
-
-/* Prevent horizontal scrolling on narrow viewports */
-html, body { max-width: 100%; overflow-x: hidden; }
-
-/* Ensure embeds never exceed viewport width */
-img, iframe, video { max-width: 100%; height: auto; }
-
-/* Safer wrapping for long German compounds in prose blocks */
-.prose, .prose * { overflow-wrap: anywhere; word-break: break-word; }
