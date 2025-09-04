@@ -103,10 +103,3 @@ img, iframe, video { max-width: 100%; height: auto; }
 
 /* Safer wrapping for long German compounds in prose blocks */
 .prose, .prose * { overflow-wrap: anywhere; word-break: break-word; }
-
-/* German typography: allow hyphenation and safe wrapping */
-html[lang="de"] :where(p, li, a, label, span, h1, h2, h3, h4, h5, h6) {
-  hyphens: auto;
-  overflow-wrap: break-word;
-  word-break: normal;
-}
