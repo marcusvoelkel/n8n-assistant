@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Privacy Policy — flowsAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind = undefined;
+    </script>
+    <script>
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = { darkMode: 'class', theme: { extend: { colors: { accent: '#ED7863' }, fontFamily: { mono: ['Space Mono','ui-monospace','SFMono-Regular','Menlo','monospace'] } } } };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="canonical" href="https://n8nai.io/privacy.html" />
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="128x128" />
+  </head>
+  <body class="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100">
+    <header class="sticky top-0 z-50 backdrop-blur bg-white/70 dark:bg-zinc-900/70 border-b border-zinc-200 dark:border-zinc-800">
+  <div class="container py-3 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 group" aria-label="Home">
+      <span class="inline-flex items-center justify-center h-9 w-9 rounded-md" style="background:#ED7863">
+        <svg viewBox="0 0 24 24" class="h-5 w-5 text-white" aria-hidden="true"><path fill="currentColor" d="M12 2l2.2 5.8L20 10l-5.8 2.2L12 18l-2.2-5.8L4 10l5.8-2.2L12 2z"/></svg>
+      </span>
+      <span class="brand text-xl font-bold" style="color:#ED7863">flowsAI</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-6 text-sm">
+      <a href="#features" class="hover:underline">Features</a>
+      <a href="#video" class="hover:underline">Video</a>
+      
+      <a href="#about" class="hover:underline">About</a>
+      <a href="#waitlist" class="hover:underline">Waitlist</a>
+      <a href="#faq" class="hover:underline">FAQ</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <a class="btn btn-secondary" id="lang-toggle" href="#de" aria-label="Deutsch">DE</a>
+      <button class="btn btn-secondary text-xl" data-theme-toggle aria-label="Toggle theme">☾</button>
+      <button class="btn btn-secondary" id="menu-toggle" aria-controls="mobile-menu" aria-label="Open menu">☰</button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden border-t border-zinc-200 dark:border-zinc-800">
+    <div class="container py-3 flex flex-col items-end text-right gap-2 text-sm">
+      <a href="#features" class="hover:underline">Features</a>
+      <a href="#video" class="hover:underline">Video</a>
+      <a href="#about" class="hover:underline">About</a>
+      <a href="#waitlist" class="hover:underline">Waitlist</a>
+      <a href="#faq" class="hover:underline">FAQ</a>
+      
+    </div>
+  </div>
+</header>
+
+    <main class="container py-10 prose prose-zinc dark:prose-invert max-w-3xl">
+      <h1 class="brand">Privacy Policy</h1>
+      <p><strong>Owner/Controller:</strong> Marcus Voelkel<br>Contact: <a href="mailto:hello@flowsai.io">hello@flowsai.io</a><br>Address: Schoenhauser Allee 19, 10119 Berlin, Germany<br><strong>Effective Date:</strong> 2025‑08‑17</p>
+      <h2>1) What this extension does</h2>
+      <ul>
+        <li>Injects a floating chat assistant into n8n pages to answer questions and create workflows on the canvas.</li>
+        <li>Optional speech‑to‑text (microphone) sends recorded audio to OpenAI’s Whisper API for transcription.</li>
+      </ul>
+      <h2>2) Data we process</h2>
+      <ul>
+        <li>Text you type in the chat input (sent to the selected OpenAI model to get an answer or to generate a workflow).</li>
+        <li>Optional images/screenshots you attach/paste (sent to the model if attached).</li>
+        <li>Optional recorded audio when you press the microphone (sent to OpenAI Whisper for transcription).</li>
+        <li>Minimal page context (current URL, visible error snippets) to improve answers and workflow generation.</li>
+        <li>Waitlist: the email address you submit, collected and stored with your consent to manage the waitlist (confirmation + future invite).</li>
+      </ul>
+      <h2>3) Where data is sent (third parties)</h2>
+      <p>OpenAI API (https://api.openai.com/v1); models: gpt‑4o, gpt‑4o‑mini, gpt‑4.1; Whisper for transcription.</p>
+      <h2>4) What we store locally</h2>
+      <ul>
+        <li>Settings (UI language, model, temperature, OpenAI API key) in Chrome extension storage.</li>
+        <li>Per‑host activation toggle and local chat history.</li>
+      </ul>
+      <h2>5) What we do not store</h2>
+      <p>No server‑side storage by the extension; no analytics or telemetry. For the website waitlist, we only store your email address (with consent) for the sole purpose of managing the waitlist.</p>
+      <h2>6) Retention</h2>
+      <p>Settings/history remain until you clear them. Requests to OpenAI are ephemeral (see OpenAI policies). Waitlist emails are retained until the invite is sent or you request deletion (at the latest 12 months).</p>
+      <h2>7) Legal basis / Purpose (GDPR)</h2>
+      <p>Purpose: AI assistance for questions and workflow generation; managing a waitlist for v2.0. Legal basis: consent (Art. 6(1)(a) GDPR) for the waitlist; otherwise consent or legitimate interests, as applicable.</p>
+      <h2>8) International data transfers</h2>
+      <p>Data may be processed outside your country by OpenAI.</p>
+      <h2>9) Your choices and controls</h2>
+      <ul>
+        <li>Disable per domain, clear chat, remove API key, uninstall the extension.</li>
+      </ul>
+      <h2>10) Children’s data</h2>
+      <p>Not intended for children.</p>
+      <h2>11) Changes</h2>
+      <p>We may update this policy and adjust the Effective Date.</p>
+      <h2>12) Contact</h2>
+      <p><a href="mailto:hello@flowsai.io">hello@flowsai.io</a></p>
+
+      <hr>
+      <h1 id="de" class="brand mt-10">Datenschutzerklärung (DE)</h1>
+      <p><strong>Verantwortlicher:</strong> Marcus Voelkel<br>Kontakt: <a href="mailto:hello@flowsai.io">hello@flowsai.io</a><br>Adresse: Schoenhauser Allee 19, 10119 Berlin, Germany<br><strong>Gültig ab:</strong> 2025‑08‑17</p>
+      <h2>1) Zweck der Erweiterung</h2>
+      <ul>
+        <li>Chat‑Modul in n8n, beantwortet Fragen und erstellt Workflows direkt auf dem Canvas.</li>
+        <li>Optional Speech‑to‑Text (Mikrofon) → OpenAI Whisper zur Transkription.</li>
+      </ul>
+      <h2>2) Verarbeitete Daten</h2>
+      <ul>
+        <li>Eingegebene Texte (an das gewählte OpenAI‑Modell).</li>
+        <li>Optional Bilder/Screenshots (falls beigefügt, an das Modell).</li>
+        <li>Optional Audio (nur bei aktivem Mikrofon) an OpenAI zur Transkription.</li>
+        <li>Minimaler Seitenkontext (URL, sichtbare Fehlermeldungen), zur Verbesserung der Antworten/Generierung.</li>
+        <li>Warteliste: die von dir übermittelte E‑Mail‑Adresse, mit deiner Einwilligung erhoben und gespeichert zur Verwaltung der Warteliste (Bestätigung + spätere Einladung).</li>
+      </ul>
+      <h2>3) Empfänger</h2>
+      <p>OpenAI API (https://api.openai.com/v1); Modelle: gpt‑4o, gpt‑4o‑mini, gpt‑4.1; Whisper.</p>
+      <h2>4) Lokale Speicherung</h2>
+      <ul>
+        <li>Einstellungen (Sprache, Modell, Temperatur, API‑Key), Aktivierungs‑Toggle, Chat‑Verläufe lokal.</li>
+      </ul>
+      <h2>5) Was nicht gespeichert wird</h2>
+      <p>Keine eigenen Server, keine Telemetrie. Für die Website‑Warteliste speichern wir ausschließlich deine E‑Mail‑Adresse (mit Einwilligung) zum Zweck der Wartelisten‑Verwaltung.</p>
+      <h2>6) Aufbewahrung</h2>
+      <p>Bis zur Löschung durch dich; Anfragen an OpenAI sind flüchtig (siehe OpenAI‑Richtlinien). Wartelisten‑E‑Mails werden bis zum Versand der Einladung oder bis zu deinem Löschersuchen aufbewahrt (spätestens 12 Monate).</p>
+      <h2>7) Rechtsgrundlage / Zweck</h2>
+      <p>Zweck: KI‑Assistenz sowie Verwaltung der Warteliste für v2.0. Rechtsgrundlage: Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) für die Warteliste; im Übrigen Einwilligung oder berechtigtes Interesse, je nach Anwendungsfall.</p>
+      <h2>8) Internationale Übermittlungen</h2>
+      <p>OpenAI kann außerhalb der EU/EWR verarbeiten.</p>
+      <h2>9) Deine Rechte / Optionen</h2>
+      <ul>
+        <li>Deaktivieren, Verlauf löschen, API‑Key entfernen, Erweiterung deinstallieren.</li>
+      </ul>
+      <h2>10) Kinderdaten</h2>
+      <p>Nicht für Kinder vorgesehen.</p>
+      <h2>11) Änderungen</h2>
+      <p>Aktualisierungen werden mit Datum gekennzeichnet.</p>
+      <h2>12) Kontakt</h2>
+      <p><a href="mailto:hello@flowsai.io">hello@flowsai.io</a></p>
+    </main>
+
+    <footer class="border-t border-zinc-200 dark:border-zinc-800 py-6">
+      <div class="container grid gap-3 md:flex md:items-center md:justify-between">
+        <div class="opacity-80 text-sm">© <span id="y"></span> flowsAI</div>
+        <div class="flex flex-wrap items-center gap-4">
+          <a class="footer-link" href="mailto:hello@flowsai.io">hello@flowsai.io</a>
+          <a class="footer-link" href="/">Home</a>
+          <a class="footer-link" href="/de/">Start</a>
+        </div>
+      </div>
+    </footer>
+    <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+    <script src="/assets/js/main.js"></script>
+  </body>
+  </html>
