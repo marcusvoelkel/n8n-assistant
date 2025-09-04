@@ -1,0 +1,74 @@
+/* Tailwind via CDN; custom tweaks */
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: dark; }
+}
+.container { max-width: 1080px; margin: 0 auto; padding: 0 1rem; }
+.brand { font-family: 'Space Mono', monospace; }
+body, html { font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+.btn { display: inline-flex; align-items: center; gap: .5rem; border-radius: .5rem; padding: .6rem 1rem; font-weight: 700; }
+.btn-primary { background: #ED7863; color: #fff; }
+.btn-secondary { background: transparent; border: 1px solid rgba(125,125,125,.4); color: inherit; }
+.badge { background: rgba(125,125,125,.15); border: 1px solid rgba(125,125,125,.25); padding: .25rem .5rem; border-radius: 999px; font-size: .75rem; }
+.hidden { display: none !important; }
+.footer-link { color: inherit; opacity: .8; text-decoration: none; }
+.footer-link:hover { opacity: 1; text-decoration: underline; }
+.card { border: 1px solid rgba(125,125,125,.2); border-radius: .75rem; padding: 1rem; background: rgba(0,0,0,.02); }
+.dark .card { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.15); }
+.screenshot { border-radius: .5rem; border: 1px solid rgba(125,125,125,.25); max-width: 560px; width: 100%; height: auto; margin-inline: auto; }
+.cookie { position: fixed; inset-inline: 1rem; bottom: 1rem; border-radius: .75rem; }
+
+/* Ensure anchored sections are not hidden under sticky header */
+section { scroll-margin-top: 90px; }
+
+/* Accented card for prominent modules (e.g., waitlist) */
+.card.accent { border-color: #ED7863; background: #FFF1ED; }
+.dark .card.accent { background: rgba(237,120,99,0.20); border-color: #ED7863; }
+
+/* Compact input style for single-line fields */
+.input-compact { height: 40px; padding: 0 10px; line-height: 40px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+
+/* Make all headings in Features section orange */
+#features h2, #features h3 { color: #ED7863; }
+.callout { border: 1px solid #ED7863; border-radius: 14px; padding: 16px; background: linear-gradient(180deg,#FFF1ED, #FFE7E1); }
+.dark .callout { background: linear-gradient(180deg, rgba(237,120,99,0.18), rgba(237,120,99,0.12)); }
+.callout h3 { margin: 0; }
+.callout p { margin: 0; }
+.wl-section { padding: 56px 0; background: linear-gradient(180deg, #ED7863 0%, #d9624d 100%); color: #fff; }
+.dark .wl-section { background: linear-gradient(180deg, #bf563f 0%, #a94534 100%); }
+.wl-section .brand, .wl-section h2, .wl-section h3 { color: #fff; }
+.wl-card { background: rgba(255,255,255,0.98); color: #1f2937; border-radius: 14px; padding: 16px; box-shadow: 0 12px 28px rgba(0,0,0,0.25); border: 1px solid rgba(0,0,0,0.06); }
+.dark .wl-card { background: #161616; color: #e5e7eb; border-color: #2e2e2e; box-shadow: 0 12px 28px rgba(0,0,0,0.45); }
+.wl-card .input-compact { background: transparent; border-color: #cbd5e1; }
+.dark .wl-card .input-compact { border-color: #3f3f3f; }
+
+/* Fallback theme colors for body to ensure background/text switch */
+body[data-theme="dark"] { background-color: #18181b; color: #e4e4e7; }
+body[data-theme="light"] { background-color: #ffffff; color: #111827; }
+
+
+/* Light theme: header should be white and transparent */
+body[data-theme="light"] header { background-color: rgba(255,255,255,0.70) !important; }
+
+/* Dark theme: header should be dark and transparent */
+body[data-theme="dark"] header { background-color: rgba(24,24,27,0.70) !important; }
+
+/* Remove bottom border from sticky header */
+header { border-bottom: 0 !important; }
+
+/* Solid variant for secondary button (non-transparent) */
+.btn-secondary.solid { background: #f4f4f5; color: #111827; border-color: rgba(125,125,125,.35); }
+.dark .btn-secondary.solid { background: #27272a; color: #e5e7eb; border-color: #3f3f46; }
+
+/* Cookie banner must be solid, not transparent */
+.cookie { background-color: #ffffff !important; }
+.dark .cookie { background-color: #161616 !important; }
+
+/* Overlay: solid background per theme, and card non-transparent */
+#store-ov .card { background: #ffffff !important; }
+.dark #store-ov .card { background: #18181b !important; }
+
+/* Ensure cookie banner is solid despite .card defaults */
+.cookie.card { background: #ffffff !important; }
+.dark .cookie.card { background: #161616 !important; }

@@ -1,0 +1,112 @@
+// Minimal waitlist endpoint (Express + Nodemailer)
+// Do NOT commit real secrets. Configure via environment.
+
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const nodemailer = require('nodemailer');
+
+const app = express();
+app.set('trust proxy', true);
+// Security headers
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(express.json());
+
+// CORS: restrict to production origin(s)
+const ALLOWED_ORIGINS = ['https://n8nai.io', 'https://www.n8nai.io'];
+app.use(cors({
+  origin: function (origin, cb) {
+    if (!origin) return cb(null, true); // allow same-origin/no-origin
+    return cb(null, ALLOWED_ORIGINS.includes(origin));
+  },
+  methods: ['POST'],
+}));
+
+// Simple rate limit (10 req / 5 min per IP)
+app.use(rateLimit({ windowMs: 5 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false }));
+
+const PORT = process.env.PORT || 8787;
+const SMTP_HOST = process.env.SMTP_HOST || '';
+const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
+const SMTP_USER = process.env.SMTP_USER || '';
+const SMTP_PASS = process.env.SMTP_PASS || '';
+const SMTP_SECURE = String(process.env.SMTP_SECURE || 'false') === 'true';
+const SMTP_FROM = process.env.SMTP_FROM || 'no-reply@n8nai.io';
+const WAITLIST_TO = process.env.WAITLIST_TO || 'waitlist@n8nai.io';
+
+function createTransport() {
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
+    throw new Error('SMTP not configured');
+  }
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_SECURE,
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+  });
+}
+
+app.post('/api/waitlist', async (req, res) => {
+  try {
+    const { name = '', email = '', message = '', consent = false, lang = 'en', website = '' } = req.body || {};
+    // Honeypot: if filled, silently accept
+    if (website && String(website).trim() !== '') return res.status(204).end();
+    const emailStr = String(email || '').trim().toLowerCase();
+    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr);
+    if (!validEmail || !consent) return res.status(400).json({ ok: false, error: 'invalid' });
+
+    const tr = createTransport();
+    const when = new Date().toISOString();
+    const ip = (req.headers['x-forwarded-for'] || req.ip || '').toString();
+    const ua = (req.headers['user-agent'] || '').toString();
+    const adminSubject = `Waitlist: ${name || emailStr}`;
+    const adminText = `New waitlist entry\n\n` +
+      `When: ${when}\n` +
+      `Email: ${emailStr}\n` +
+      `Name: ${name}\n` +
+      `Message: ${message}\n` +
+      `Lang: ${lang}\n` +
+      `Consent: ${consent}\n` +
+      `IP: ${ip}\n` +
+      `UA: ${ua}`;
+    await tr.sendMail({ from: SMTP_USER, to: WAITLIST_TO, subject: adminSubject, text: adminText, replyTo: emailStr, envelope: { from: SMTP_USER, to: WAITLIST_TO } });
+
+    // Confirmation to user (single opt-in)
+    const isDe = String(lang).toLowerCase().startsWith('de');
+    const confSubject = isDe ? 'n8nAI Warteliste — Bestätigung' : 'n8nAI Waitlist — Confirmation';
+    const confLines = isDe
+      ? [
+          'Danke für deine Anmeldung zur n8nAI‑Warteliste!',
+          '',
+          'Wir melden uns, sobald v2.0 (schickeres UI, mehr API‑Provider, Freemium) verfügbar ist.',
+          'Wir versenden keine Marketing‑Mails — nur diese Bestätigung und später die Einladung.',
+          '',
+          'Datenschutz: https://n8nai.io/privacy.html',
+        ]
+      : [
+          'Thanks for joining the n8nAI waitlist!',
+          '',
+          'We’ll reach out as soon as v2.0 (sleeker UI, more API providers, freemium) is available.',
+          'We do not send marketing — only this confirmation and the future invite.',
+          '',
+          'Privacy: https://n8nai.io/privacy.html',
+        ];
+    const confText = confLines.join('\n');
+    try {
+      await tr.sendMail({ from: SMTP_USER, to: emailStr, subject: confSubject, text: confText, replyTo: WAITLIST_TO, envelope: { from: SMTP_USER, to: emailStr } });
+    } catch {}
+
+    // Optional: confirmation email to user (can be enabled later)
+    // await tr.sendMail({ from: SMTP_FROM, to: email, subject: 'Thanks for joining the waitlist', text: 'We will be in touch.' });
+
+    res.json({ ok: true });
+  } catch (e) {
+    try { console.error('waitlist error:', e && e.message ? e.message : e); } catch {}
+    res.status(500).json({ ok: false });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Waitlist server listening on :${PORT}`);
+});
