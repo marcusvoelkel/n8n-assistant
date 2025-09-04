@@ -136,6 +136,13 @@
 
       <!-- removed duplicate Über sections -->
 
+      <section class="container py-16" id="cta-inline">
+        <div class="text-center">
+          <a class="btn btn-primary" data-store-overlay href="#" rel="nofollow">Zu Chrome hinzufügen (kostenlos)</a>
+          <a class="btn btn-secondary" href="/downloads/n8n-ai-assistant-1.1.0.zip" download>Extension herunterladen</a>
+        </div>
+      </section>
+
       <section class="wl-section" id="waitlist">
         <div class="container">
           <h2 class="text-3xl md:text-4xl font-bold brand">Warteliste für v2.0</h2>
@@ -202,8 +209,22 @@
           <a class="footer-link" href="/imprint.html#de">Impressum</a>
           <a class="footer-link" href="/privacy.html">Datenschutz</a>
         </div>
+      </div></footer>
+
+    <!-- Store overlay -->
+    <div id="store-ov" class="fixed inset-0 hidden bg-black/50 z-50">
+      <div class="container h-full flex items-center justify-center">
+        <div class="card max-w-lg w-full bg-white dark:bg-zinc-900">
+          <h3 class="brand text-xl mb-2">Chrome Web Store</h3>
+          <p class="text-sm opacity-90">Die Extension ist noch nicht im Chrome Web Store veröffentlicht. Bis dahin kannst du das ZIP herunterladen und als entpackte Extension laden.</p>
+          <div class="mt-4 flex gap-2">
+            <a class="btn btn-primary" href="/downloads/n8n-ai-assistant-1.1.0.zip" download>Extension herunterladen</a>
+            <button class="btn btn-secondary solid" data-close>Schließen</button>
+          </div>
+        </div>
       </div>
-    </footer>
+    </div>
+
 
     <div id="cookie-banner" class="cookie container card hidden">
       <div class="flex items-center justify-between gap-4">

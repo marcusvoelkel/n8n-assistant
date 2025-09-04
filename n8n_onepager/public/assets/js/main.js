@@ -53,14 +53,19 @@
     mobile.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { mobile.classList.add('hidden'); menuBtn.setAttribute('aria-expanded','false'); }));
   }
 
-  // Store overlay (not yet in Chrome Web Store)
-  const storeBtn = document.getElementById('cta-store');
-  const storeOv = document.getElementById('store-ov');
-  if (storeBtn && storeOv) {
-    const close = storeOv.querySelector('[data-close]');
-    storeBtn.addEventListener('click', (e) => { e.preventDefault(); storeOv.classList.remove('hidden'); });
-    if (close) close.addEventListener('click', () => storeOv.classList.add('hidden'));
-    storeOv.addEventListener('click', (e) => { if (e.target === storeOv) storeOv.classList.add('hidden'); });
+  // Store overlay
+  {
+    const storeOv = document.getElementById('store-ov');
+    if (storeOv) {
+      const triggers = Array.from(document.querySelectorAll('[data-store-overlay]'));
+      const legacy = document.getElementById('cta-store');
+      if (legacy) triggers.push(legacy);
+      const openOv = (e) => { if (e) e.preventDefault(); storeOv.classList.remove('hidden'); };
+      triggers.forEach(btn => btn.addEventListener('click', openOv));
+      const close = storeOv.querySelector('[data-close]');
+      if (close) close.addEventListener('click', () => storeOv.classList.add('hidden'));
+      storeOv.addEventListener('click', (e) => { if (e.target === storeOv) storeOv.classList.add('hidden'); });
+    }
   }
 
   // Smooth scroll for in-page anchors
@@ -126,3 +131,12 @@
     });
   }
 })();
+
+  // Multi-trigger for store overlay
+  (function(){
+    const storeOv = document.getElementById('store-ov');
+    if (!storeOv) return;
+    const btns = Array.from(document.querySelectorAll('[data-store-overlay]'));
+    const openOv = (e) => { if (e) e.preventDefault(); storeOv.classList.remove('hidden'); };
+    btns.forEach(b => b.addEventListener('click', openOv));
+  })();

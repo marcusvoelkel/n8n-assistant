@@ -2,7 +2,7 @@
 @media (prefers-color-scheme: dark) {
   :root { color-scheme: dark; }
 }
-.container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+.container { max-width: 1080px; margin: 0 auto; padding: 0 1rem; }
 .brand { font-family: 'Space Mono', monospace; }
 body, html { font-family: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
 .btn { display: inline-flex; align-items: center; gap: .5rem; border-radius: .5rem; padding: .6rem 1rem; font-weight: 700; }
@@ -56,3 +56,38 @@ body[data-theme="dark"] header { background-color: rgba(24,24,27,0.70) !importan
 
 /* Remove bottom border from sticky header */
 header { border-bottom: 0 !important; }
+
+/* Solid variant for secondary button (non-transparent) */
+.btn-secondary.solid { background: #f4f4f5; color: #111827; border-color: rgba(125,125,125,.35); }
+.dark .btn-secondary.solid { background: #27272a; color: #e5e7eb; border-color: #3f3f46; }
+
+/* Cookie banner must be solid, not transparent */
+.cookie { background-color: #ffffff !important; }
+.dark .cookie { background-color: #161616 !important; }
+
+/* Overlay: solid background per theme, and card non-transparent */
+#store-ov .card { background: #ffffff !important; }
+.dark #store-ov .card { background: #18181b !important; }
+
+/* Ensure cookie banner is solid despite .card defaults */
+.cookie.card { background: #ffffff !important; }
+.dark .cookie.card { background: #161616 !important; }
+
+/* Button hover/active states (subtle) */
+.btn { transition: background-color .15s ease, border-color .15s ease, color .15s ease; }
+
+/* Primary (accent) */
+.btn-primary:hover { background: #e06d58; }
+.btn-primary:active { background: #d8614b; }
+
+/* Secondary (outlined/transparent) */
+.btn-secondary:hover { background: rgba(125,125,125,.08); border-color: rgba(125,125,125,.45); }
+.btn-secondary:active { background: rgba(125,125,125,.12); border-color: rgba(125,125,125,.55); }
+.dark .btn-secondary:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.22); }
+.dark .btn-secondary:active { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.28); }
+
+/* Secondary solid */
+.btn-secondary.solid:hover { background: #eaeaec; border-color: rgba(125,125,125,.40); }
+.btn-secondary.solid:active { background: #e2e2e5; border-color: rgba(125,125,125,.46); }
+.dark .btn-secondary.solid:hover { background: #313135; border-color: #4a4a50; }
+.dark .btn-secondary.solid:active { background: #3a3a3f; border-color: #52525b; }
