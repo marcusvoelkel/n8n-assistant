@@ -110,9 +110,3 @@ html[lang="de"] :where(p, li, a, label, span, h1, h2, h3, h4, h5, h6) {
   overflow-wrap: break-word;
   word-break: normal;
 }
-
-/* Back-to-top button */
-#to-top { position: fixed; right: 20px; bottom: 20px; width: 40px; height: 40px; border-radius: 999px; border: 1px solid rgba(125,125,125,.35); font: 700 18px/1 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; background: rgba(255,255,255,0.95); color: #111827; box-shadow: 0 6px 22px rgba(0,0,0,.12); }
-.dark #to-top { background: rgba(24,24,27,0.95); color: #e5e7eb; border-color: #3f3f46; box-shadow: 0 8px 26px rgba(0,0,0,.35); }
-#to-top:hover { filter: brightness(0.98); }
-#to-top:active { transform: translateY(1px); }
