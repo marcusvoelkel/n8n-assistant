@@ -970,13 +970,39 @@
   }
 
   async function loadTranslations(lang) {
-    const url = chrome.runtime.getURL(`assets/i18n/${lang}.json`);
+    // Prüfe Extension-Kontext BEVOR chrome.runtime.getURL()
+    if (!isExtContextValid()) {
+      console.warn('Extension context invalid, using fallback translations');
+      I18N_DICT = {
+        ui: { settings: 'Settings', close: 'Close', clear: 'Clear chat' },
+        overlay: { title: 'AI Assistant Settings' },
+        error: { noApiKey: 'Please configure your API key in settings.' }
+      };
+      return;
+    }
+
+    const fallbackLang = 'en';
+    const defaultTranslations = {
+      ui: { settings: 'Settings', close: 'Close', clear: 'Clear chat' },
+      overlay: { title: 'AI Assistant Settings' },
+      error: { noApiKey: 'Please configure your API key in settings.' }
+    };
+
     try {
+      const url = chrome.runtime.getURL(`assets/i18n/${lang}.json`);
       const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       I18N_DICT = await res.json();
-    } catch {
-      const res = await fetch(chrome.runtime.getURL('assets/i18n/de.json'));
-      I18N_DICT = await res.json();
+    } catch (primaryError) {
+      try {
+        const fallbackUrl = chrome.runtime.getURL(`assets/i18n/${fallbackLang}.json`);
+        const res = await fetch(fallbackUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        I18N_DICT = await res.json();
+      } catch (fallbackError) {
+        console.warn('Translation loading failed, using defaults:', { primaryError, fallbackError });
+        I18N_DICT = defaultTranslations;
+      }
     }
   }
 

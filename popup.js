@@ -60,8 +60,8 @@
   async function init() {
     const tab = await getActiveTab();
     const cfg = await chrome.storage.sync.get(['uiLang']);
-    // Default: English (if unset)
-    const lang = (cfg.uiLang === 'de' ? 'de' : 'en');
+    // Default: English (forced)
+    const lang = 'en';
     await loadTranslations(lang);
     titleEl.textContent = t('popup.title');
     descEl.textContent = t('popup.desc');
@@ -74,20 +74,36 @@
       const host = (() => { try { return new URL(origin).host; } catch { return null; } })();
       if (host) await writeEnabled(host, true);
       // ask background to request permission + register script
-      const res = await chrome.runtime.sendMessage({ type: 'REGISTER_ORIGIN', origin });
+      const res = await chrome.runtime.sendMessage({ 
+        type: 'REGISTER_ORIGIN', 
+        origin,
+        currentTabId: tab?.id,
+        currentTabUrl: tab?.url
+      });
       if (!res?.ok) throw new Error(res?.error || 'activation_failed');
       renderStatus(true);
-      // try to inject immediately on current tab if it matches
-      if (tab?.id && tab?.url && tab.url.startsWith(origin)) {
-        try { await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['contentScript.js'] }); } catch {}
+      
+      // If current tab matches and injection was successful, close popup
+      if (res.injected) {
+        window.close();
       }
     }
 
-    activateBtn.onclick = async () => {
+    const activateHandler = async () => {
       const origin = normalizeOrigin(originInput.value);
       if (!origin) { statusEl.textContent = 'Enter a valid https:// URL'; return; }
       try { await enableForOrigin(origin); } catch (e) { statusEl.textContent = `Activation failed: ${e?.message || e}`; }
     };
+
+    activateBtn.onclick = activateHandler;
+    
+    // Enable Enter key on input field
+    originInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === 'Return') {
+        e.preventDefault();
+        activateHandler();
+      }
+    });
   }
 
   init();

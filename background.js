@@ -57,14 +57,40 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type === 'REGISTER_ORIGIN') {
     (async () => {
       const origin = String(msg.origin || '').trim();
+      const currentTabId = msg.currentTabId;
+      const currentTabUrl = msg.currentTabUrl;
+      
       if (!/^https?:\/\//i.test(origin)) throw new Error('invalid origin');
       const ok = await requestOriginPermission(origin);
       if (!ok) { sendResponse({ ok: false, error: 'permission_denied' }); return; }
+      
       const cur = await getActivatedOrigins();
       if (!cur.includes(origin)) cur.push(origin);
       await setActivatedOrigins(cur);
       await refreshRegisteredScripts();
-      sendResponse({ ok: true });
+      
+      let injected = false;
+      // Try to inject immediately on current tab if it matches
+      if (currentTabId && currentTabUrl && currentTabUrl.startsWith(origin)) {
+        try {
+          await chrome.scripting.executeScript({ 
+            target: { tabId: currentTabId }, 
+            files: ['contentScript.js'] 
+          });
+          injected = true;
+        } catch (injectError) {
+          console.warn('Immediate injection failed:', injectError);
+          // Try tab reload as fallback
+          try {
+            await chrome.tabs.reload(currentTabId);
+            injected = true; // Will be injected after reload via registered content script
+          } catch (reloadError) {
+            console.warn('Tab reload failed:', reloadError);
+          }
+        }
+      }
+      
+      sendResponse({ ok: true, injected });
     })().catch((e) => sendResponse({ ok: false, error: String(e?.message || e) }));
     return true;
   }
