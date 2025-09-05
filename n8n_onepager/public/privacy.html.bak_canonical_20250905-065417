@@ -16,7 +16,7 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/assets/css/base.css">
-    <link rel="canonical" href="https://flowsai.io/privacy.html" />
+    <link rel="canonical" href="https://n8nai.io/privacy.html" />
     <link rel="icon" type="image/png" href="/favicon.png" sizes="128x128" />
   </head>
   <body class="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100">

@@ -17,10 +17,10 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/assets/css/base.css">
-    <link rel="canonical" href="https://flowsai.io/de/" />
+    <link rel="canonical" href="https://n8nai.io/de/" />
     <link rel="icon" type="image/png" href="/favicon.png" sizes="128x128" />
-    <link rel="alternate" hreflang="de" href="https://flowsai.io/de/" />
-    <link rel="alternate" hreflang="en" href="https://flowsai.io/" />
+    <link rel="alternate" hreflang="de" href="https://n8nai.io/de/" />
+    <link rel="alternate" hreflang="en" href="https://n8nai.io/" />
     <meta name="robots" content="index,follow" />
   </head>
   <body class="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100">

@@ -69,13 +69,26 @@
       const now = await readEnabled(host);
       await writeEnabled(host, !now);
       render(host, !now);
-      try {
-        if (tab?.id && !now) {
-          // ensure script is injected when enabling on domains without content_script
+      // Best effort: inject content script on enable; ignore errors on hosts we can't inject
+      if (tab?.id && !now) {
+        try {
           await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['contentScript.js'] });
+        } catch (e) {
+          // ignore — storage toggle still controls injection where permitted
         }
-        if (tab?.id) chrome.tabs.sendMessage(tab.id, { type: 'N8N_AI_TOGGLE', host, enabled: !now });
-      } catch {}
+      }
+      // Optional ping to content script; avoid "Receiving end does not exist" noise
+      if (tab?.id) {
+        try {
+          await new Promise((resolve) => {
+            chrome.tabs.sendMessage(tab.id, { type: 'N8N_AI_TOGGLE', host, enabled: !now }, () => {
+              // Swallow runtime error if no receiver — that's fine (storage listener will handle it)
+              void chrome.runtime?.lastError;
+              resolve();
+            });
+          });
+        } catch {}
+      }
     };
   }
 
