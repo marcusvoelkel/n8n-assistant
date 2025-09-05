@@ -32,8 +32,8 @@ const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
 const SMTP_SECURE = String(process.env.SMTP_SECURE || 'false') === 'true';
-const SMTP_FROM = process.env.SMTP_FROM || waitlist.io;
-const WAITLIST_TO = process.env.WAITLIST_TO || 'waitlist.io';
+const SMTP_FROM = process.env.SMTP_FROM || 'no-reply@n8nai.io';
+const WAITLIST_TO = process.env.WAITLIST_TO || 'waitlist@n8nai.io';
 
 function createTransport() {
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {

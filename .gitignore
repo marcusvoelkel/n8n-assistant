@@ -1,2 +1,8 @@
 .DS_Store
 node_modules
+dist/
+
+# Never commit local environment files or backups
+n8n_onepager/server/.env
+n8n_onepager/server/.env.*
+!n8n_onepager/server/.env.example
