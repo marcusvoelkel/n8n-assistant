@@ -69,7 +69,7 @@
     "enable": "Enable",
     "disable": "Disable",
     "statusOn": "<span class=\"ok\">Enabled.</span> The assistant appears bottom right.",
-    "statusOff": "<span class=\"warn\">Disabled.</span> Click “Enable” to show it.",
+    "statusOff": "<span class=\"warn\">Disabled.</span> Enter your n8n base URL and click “Activate”.",
     "note": "Note: The assistant currently requires an OpenAI API key (set inside the chat settings)."
   },
   "privacy": {

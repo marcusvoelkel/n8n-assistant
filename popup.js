@@ -2,7 +2,6 @@
   const NS = 'n8n-ai-assistant';
   const originInput = document.getElementById('origin');
   const activateBtn = document.getElementById('activate');
-  const deactivateBtn = document.getElementById('deactivate');
   const statusEl = document.getElementById('status');
   const titleEl = document.querySelector('.title');
   const descEl = document.querySelector('.desc');
@@ -66,13 +65,9 @@
     await loadTranslations(lang);
     titleEl.textContent = t('popup.title');
     descEl.textContent = t('popup.desc');
-    const PRIV_URL = chrome.runtime.getURL('PRIVACY.md');
+    const PRIV_URL = 'https://flowsai.io/privacy.html';
     noteEl.innerHTML = `${t('popup.note')} <a href="${PRIV_URL}" target="_blank" rel="noopener noreferrer">${t('privacy.label')}</a>`;
-    // Prefill with current tab origin
-    try {
-      const u = new URL(tab?.url || '');
-      originInput.value = `${u.protocol}//${u.host}`;
-    } catch {}
+    // Do not prefill origin; user must enter URL explicitly
 
     async function enableForOrigin(origin) {
       // persist toggle for immediate UI
@@ -88,24 +83,10 @@
       }
     }
 
-    async function disableForOrigin(origin) {
-      const host = (() => { try { return new URL(origin).host; } catch { return null; } })();
-      if (host) await writeEnabled(host, false);
-      const res = await chrome.runtime.sendMessage({ type: 'UNREGISTER_ORIGIN', origin });
-      if (!res?.ok) throw new Error(res?.error || 'deactivation_failed');
-      renderStatus(false);
-    }
-
     activateBtn.onclick = async () => {
       const origin = normalizeOrigin(originInput.value);
       if (!origin) { statusEl.textContent = 'Enter a valid https:// URL'; return; }
       try { await enableForOrigin(origin); } catch (e) { statusEl.textContent = `Activation failed: ${e?.message || e}`; }
-    };
-
-    deactivateBtn.onclick = async () => {
-      const origin = normalizeOrigin(originInput.value);
-      if (!origin) { statusEl.textContent = 'Enter a valid https:// URL'; return; }
-      try { await disableForOrigin(origin); } catch (e) { statusEl.textContent = `Deactivation failed: ${e?.message || e}`; }
     };
   }
 
