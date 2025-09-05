@@ -32,8 +32,8 @@ const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
 const SMTP_SECURE = String(process.env.SMTP_SECURE || 'false') === 'true';
-const SMTP_FROM = process.env.SMTP_FROM || waitlist.io;
-const WAITLIST_TO = process.env.WAITLIST_TO || 'waitlist.io';
+const SMTP_FROM = process.env.SMTP_FROM || 'no-reply@n8nai.io';
+const WAITLIST_TO = process.env.WAITLIST_TO || 'waitlist@n8nai.io';
 
 function createTransport() {
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
@@ -70,7 +70,7 @@ app.post('/api/waitlist', async (req, res) => {
       `Consent: ${consent}\n` +
       `IP: ${ip}\n` +
       `UA: ${ua}`;
-    await tr.sendMail({ from: SMTP_FROM, to: WAITLIST_TO, subject: adminSubject, text: adminText, replyTo: emailStr, envelope: { from: SMTP_FROM, to: WAITLIST_TO } });
+    await tr.sendMail({ from: SMTP_USER, to: WAITLIST_TO, subject: adminSubject, text: adminText, replyTo: emailStr, envelope: { from: SMTP_USER, to: WAITLIST_TO } });
 
     // Confirmation to user (single opt-in)
     const isDe = String(lang).toLowerCase().startsWith('de');
@@ -94,7 +94,7 @@ app.post('/api/waitlist', async (req, res) => {
         ];
     const confText = confLines.join('\n');
     try {
-      await tr.sendMail({ from: SMTP_FROM, to: emailStr, subject: confSubject, text: confText, replyTo: WAITLIST_TO, envelope: { from: SMTP_FROM, to: emailStr } });
+      await tr.sendMail({ from: SMTP_USER, to: emailStr, subject: confSubject, text: confText, replyTo: WAITLIST_TO, envelope: { from: SMTP_USER, to: emailStr } });
     } catch {}
 
     // Optional: confirmation email to user (can be enabled later)
