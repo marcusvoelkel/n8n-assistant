@@ -1,7 +1,8 @@
 (() => {
   const NS = 'n8n-ai-assistant';
-  const hostEl = document.getElementById('host');
-  const toggleBtn = document.getElementById('toggle');
+  const originInput = document.getElementById('origin');
+  const activateBtn = document.getElementById('activate');
+  const deactivateBtn = document.getElementById('deactivate');
   const statusEl = document.getElementById('status');
   const titleEl = document.querySelector('.title');
   const descEl = document.querySelector('.desc');
@@ -18,8 +19,18 @@
     catch { const res = await fetch(chrome.runtime.getURL('assets/i18n/de.json')); I18N_DICT = await res.json(); }
   }
 
-  function getHostFromUrl(url) {
-    try { return new URL(url).host; } catch { return null; }
+  function normalizeOrigin(input) {
+    try {
+      const u = new URL(input);
+      if (!/^https?:$/i.test(u.protocol)) return null;
+      return `${u.protocol}//${u.host}`;
+    } catch {
+      // allow host without protocol -> assume https
+      try {
+        const u = new URL('https://' + String(input).trim());
+        return `${u.protocol}//${u.host}`;
+      } catch { return null; }
+    }
   }
 
   async function getActiveTab() {
@@ -41,54 +52,60 @@
     else await chrome.storage.local.remove([key]);
   }
 
-  function render(host, enabled) {
-    const enableText = t('popup.enable') || t('ui.enable') || 'Aktivieren';
-    const disableText = t('popup.disable') || t('ui.disable') || 'Deaktivieren';
-    hostEl.textContent = host || '—';
-    toggleBtn.textContent = enabled ? disableText : enableText;
-    toggleBtn.classList.toggle('btn-primary', !enabled);
-    toggleBtn.classList.toggle('btn-secondary', enabled);
-    statusEl.innerHTML = enabled ? (t('popup.statusOn') || '') : (t('popup.statusOff') || '');
+  function renderStatus(enabled) {
+    const on = t('popup.statusOn') || 'Enabled. The assistant appears bottom right.';
+    const off = t('popup.statusOff') || 'Disabled. Click “Enable” to show it.';
+    statusEl.innerHTML = enabled ? on : off;
   }
 
   async function init() {
     const tab = await getActiveTab();
     const cfg = await chrome.storage.sync.get(['uiLang']);
-    const lang = (cfg.uiLang === 'en' ? 'en' : 'de');
+    // Default: English (if unset)
+    const lang = (cfg.uiLang === 'de' ? 'de' : 'en');
     await loadTranslations(lang);
     titleEl.textContent = t('popup.title');
     descEl.textContent = t('popup.desc');
     const PRIV_URL = chrome.runtime.getURL('PRIVACY.md');
     noteEl.innerHTML = `${t('popup.note')} <a href="${PRIV_URL}" target="_blank" rel="noopener noreferrer">${t('privacy.label')}</a>`;
-    const host = getHostFromUrl(tab?.url || '');
-    render(host, false);
-    if (!host) return;
-    const enabled = await readEnabled(host);
-    render(host, enabled);
-    toggleBtn.onclick = async () => {
-      const now = await readEnabled(host);
-      await writeEnabled(host, !now);
-      render(host, !now);
-      // Best effort: inject content script on enable; ignore errors on hosts we can't inject
-      if (tab?.id && !now) {
-        try {
-          await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['contentScript.js'] });
-        } catch (e) {
-          // ignore — storage toggle still controls injection where permitted
-        }
+    // Prefill with current tab origin
+    try {
+      const u = new URL(tab?.url || '');
+      originInput.value = `${u.protocol}//${u.host}`;
+    } catch {}
+
+    async function enableForOrigin(origin) {
+      // persist toggle for immediate UI
+      const host = (() => { try { return new URL(origin).host; } catch { return null; } })();
+      if (host) await writeEnabled(host, true);
+      // ask background to request permission + register script
+      const res = await chrome.runtime.sendMessage({ type: 'REGISTER_ORIGIN', origin });
+      if (!res?.ok) throw new Error(res?.error || 'activation_failed');
+      renderStatus(true);
+      // try to inject immediately on current tab if it matches
+      if (tab?.id && tab?.url && tab.url.startsWith(origin)) {
+        try { await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['contentScript.js'] }); } catch {}
       }
-      // Optional ping to content script; avoid "Receiving end does not exist" noise
-      if (tab?.id) {
-        try {
-          await new Promise((resolve) => {
-            chrome.tabs.sendMessage(tab.id, { type: 'N8N_AI_TOGGLE', host, enabled: !now }, () => {
-              // Swallow runtime error if no receiver — that's fine (storage listener will handle it)
-              void chrome.runtime?.lastError;
-              resolve();
-            });
-          });
-        } catch {}
-      }
+    }
+
+    async function disableForOrigin(origin) {
+      const host = (() => { try { return new URL(origin).host; } catch { return null; } })();
+      if (host) await writeEnabled(host, false);
+      const res = await chrome.runtime.sendMessage({ type: 'UNREGISTER_ORIGIN', origin });
+      if (!res?.ok) throw new Error(res?.error || 'deactivation_failed');
+      renderStatus(false);
+    }
+
+    activateBtn.onclick = async () => {
+      const origin = normalizeOrigin(originInput.value);
+      if (!origin) { statusEl.textContent = 'Enter a valid https:// URL'; return; }
+      try { await enableForOrigin(origin); } catch (e) { statusEl.textContent = `Activation failed: ${e?.message || e}`; }
+    };
+
+    deactivateBtn.onclick = async () => {
+      const origin = normalizeOrigin(originInput.value);
+      if (!origin) { statusEl.textContent = 'Enter a valid https:// URL'; return; }
+      try { await disableForOrigin(origin); } catch (e) { statusEl.textContent = `Deactivation failed: ${e?.message || e}`; }
     };
   }
 

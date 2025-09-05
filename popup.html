@@ -21,14 +21,17 @@
   </head>
   <body>
     <div class="title">n8n AI Assistant</div>
-    <div class="desc">Blendet unten rechts ein Chat‑Modul ein, mit dem Workflows erstellt und Fragen beantwortet werden. Aktiviert auf dieser Seite:</div>
+    <div class="desc">Displays a bottom‑right chat module to build workflows and answer questions.</div>
     <div class="row">
-      <div class="host" id="host">–</div>
-      <button class="btn btn-primary" id="toggle">Aktivieren</button>
+      <input id="origin" type="text" placeholder="https://your-n8n.example.com" 
+        style="flex:1; min-width: 10px; background:#2a2a2a; color:#e5e7eb; border:1px solid #3a3a3a; border-radius:8px; padding:8px;" />
+      <button class="btn btn-primary" id="activate">Activate</button>
     </div>
-    <div class="status" id="status">Der Assistant erscheint unten rechts, wenn aktiviert.</div>
-    <div class="note">Hinweis: Aktuell funktioniert der Assistant nur mit einem OpenAI API‑Key (in den Einstellungen im Chat hinterlegbar).</div>
+    <div class="row" style="margin-top:8px; justify-content:flex-end">
+      <button class="btn btn-secondary" id="deactivate">Deactivate</button>
+    </div>
+    <div class="status" id="status">Enter your n8n base URL and click Activate.</div>
+    <div class="note">Note: The assistant currently requires an OpenAI API key (set inside the chat settings).</div>
     <script src="popup.js"></script>
   </body>
   </html>
-

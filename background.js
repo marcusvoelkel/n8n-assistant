@@ -10,6 +10,78 @@ const MODEL_MAP = {
   'gpt-4.1-nano': { apiBase: 'https://api.openai.com/v1', apiType: 'chat' },
 };
 
+// --- Dynamic registration for content scripts on user-defined hosts ---
+const CS_ID = 'assistant_dynamic';
+
+async function getActivatedOrigins() {
+  const { activatedOrigins } = await chrome.storage.sync.get(['activatedOrigins']);
+  return Array.isArray(activatedOrigins) ? activatedOrigins : [];
+}
+
+async function setActivatedOrigins(list) {
+  await chrome.storage.sync.set({ activatedOrigins: list });
+}
+
+async function refreshRegisteredScripts() {
+  try {
+    const existing = await chrome.scripting.getRegisteredContentScripts({ ids: [CS_ID] }).catch(() => []);
+    if (existing && existing.length) {
+      await chrome.scripting.unregisterContentScripts({ ids: [CS_ID] }).catch(() => {});
+    }
+  } catch {}
+  const origins = await getActivatedOrigins();
+  if (!origins.length) return;
+  const matches = origins.map((o) => `${o.replace(/\/$/, '')}/*`);
+  await chrome.scripting.registerContentScripts([{
+    id: CS_ID,
+    js: ['contentScript.js'],
+    matches,
+    runAt: 'document_end',
+    world: 'ISOLATED'
+  }]);
+}
+
+async function requestOriginPermission(origin) {
+  const ok = await chrome.permissions.request({ origins: [`${origin.replace(/\/$/, '')}/*`] });
+  return !!ok;
+}
+
+async function removeOriginPermission(origin) {
+  try { await chrome.permissions.remove({ origins: [`${origin.replace(/\/$/, '')}/*`] }); } catch {}
+}
+
+chrome.runtime.onInstalled.addListener(() => { refreshRegisteredScripts(); });
+chrome.runtime.onStartup?.addListener?.(() => { refreshRegisteredScripts(); });
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg?.type === 'REGISTER_ORIGIN') {
+    (async () => {
+      const origin = String(msg.origin || '').trim();
+      if (!/^https?:\/\//i.test(origin)) throw new Error('invalid origin');
+      const ok = await requestOriginPermission(origin);
+      if (!ok) { sendResponse({ ok: false, error: 'permission_denied' }); return; }
+      const cur = await getActivatedOrigins();
+      if (!cur.includes(origin)) cur.push(origin);
+      await setActivatedOrigins(cur);
+      await refreshRegisteredScripts();
+      sendResponse({ ok: true });
+    })().catch((e) => sendResponse({ ok: false, error: String(e?.message || e) }));
+    return true;
+  }
+  if (msg?.type === 'UNREGISTER_ORIGIN') {
+    (async () => {
+      const origin = String(msg.origin || '').trim();
+      const cur = await getActivatedOrigins();
+      const next = cur.filter((o) => o !== origin);
+      await setActivatedOrigins(next);
+      await removeOriginPermission(origin);
+      await refreshRegisteredScripts();
+      sendResponse({ ok: true });
+    })().catch((e) => sendResponse({ ok: false, error: String(e?.message || e) }));
+    return true;
+  }
+});
+
 // i18n utilities (mirror contentScript approach)
 let I18N_DICT = {};
 function t(key, params) {
