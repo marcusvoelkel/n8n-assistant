@@ -5,10 +5,7 @@ const DEFAULTS = {
   temperature: '0.2',
   createMethod: 'ui',
   allowedSites: [
-    'https://n8n.*',
-    'n8n*',
-    'localhost',
-    '127.0.0.1',
+    '*',
   ],
 };
 
