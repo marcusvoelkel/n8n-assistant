@@ -11,6 +11,7 @@ Adds a floating AI chat to n8n pages. The assistant can answer questions and gen
 ## Installation
 
 * Open `chrome://extensions` → Enable Developer Mode → “Load unpacked” → select the folder `n8n-ai-assistant/`.
+* Enter your n8n base URL in the pop-up and click 'Activate'.
 * Open your n8n editor; a floating “AI” button will appear at the bottom right.
 * Click on the AI Assistant settings and configure:
 
@@ -41,6 +42,7 @@ Fügt einen schwebenden KI-Chat in n8n-Seiten ein. Der Assistent kann Fragen bea
 ## Installation
 
 * Öffne `chrome://extensions` → Aktiviere den Entwicklermodus → „Entpackt laden“ → wähle den Ordner `n8n-ai-assistant/` aus.
+* Gib deine n8n base URL im Pop-up ein und klicke auf 'Activate'.
 * Öffne deinen n8n-Editor; unten rechts erscheint ein schwebender „AI“-Button.
 * Klicke auf die Settings im AI Assistenten und konfiguriere:
   * OpenAI-LLM und OpenAI API Key
