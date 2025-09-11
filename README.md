@@ -1,5 +1,6 @@
 # n8n AI Assistant (Chrome Extension)
 Not affiliated with n8n
+License: MIT
 
 **Privacy Policy:** https://flowsai.io/privacy.html
 
@@ -31,6 +32,7 @@ Adds a floating AI chat to n8n pages. The assistant can answer questions and gen
 
 # n8n KI-Assistent (Chrome-Erweiterung)
 Not affiliated with n8n
+License: MIT
 
 **Datenschutzerklärung:** https://flowsai.io/privacy.html
 
